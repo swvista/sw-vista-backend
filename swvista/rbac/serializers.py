@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password  # Import hasher
 from rest_framework import serializers
 
 from .models import Permission, Role, RolePermission, User, UserRole
@@ -16,9 +17,29 @@ class RoleSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    # Make password write-only
+    password = serializers.CharField(
+        write_only=True, required=True, style={"input_type": "password"}
+    )
+
     class Meta:
         model = User
-        fields = ["username", "email", "role"]
+        # Add 'password' to fields used for input, but it won't be in output due to write_only=True
+        fields = ["id", "username", "email", "role", "password"]
+        read_only_fields = ["id"]  # Make id read-only
+
+    def create(self, validated_data):
+        # Hash password before creating user
+        validated_data["password"] = make_password(validated_data.get("password"))
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        # Hash password if it is being updated
+        password = validated_data.pop("password", None)
+        if password:
+            instance.password = make_password(password)
+        # Update other fields as usual
+        return super().update(instance, validated_data)
 
 
 class UserRoleSerializer(serializers.ModelSerializer):

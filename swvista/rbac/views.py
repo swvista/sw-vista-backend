@@ -1,3 +1,6 @@
+import json
+
+from django.contrib.auth.hashers import check_password
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
@@ -28,6 +31,79 @@ from .models import Role, User, UserRole
 from .serializers import UserRoleSerializer
 
 # Create your views here.
+
+# --- Authentication Views ---
+
+
+@csrf_exempt
+def login_view(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            username = data.get("username")
+            password = data.get("password")
+
+            if not username or not password:
+                return JsonResponse(
+                    {"error": "Username and password are required."}, status=400
+                )
+
+            # !! SECURITY WARNING !!
+            # The current User model stores passwords in plain text.
+            # This is highly insecure and should be changed to use password hashing (e.g., Django's built-in password management).
+            # Proceeding with plain text comparison as per constraint "do not change existing models".
+            try:
+                user = User.objects.get(username=username)
+                if check_password(password, user.password):
+                    # Manually create session data
+                    request.session["user_id"] = user.id
+                    request.session["username"] = user.username
+                    # Optionally store role/permissions if needed frequently, but be mindful of session size
+                    # request.session['role'] = user.role.name
+
+                    return JsonResponse(
+                        {
+                            "message": "Login successful.",
+                            "user_id": user.id,
+                            "username": user.username,
+                        },
+                        status=200,
+                    )
+                else:
+                    return JsonResponse({"error": "Invalid credentials."}, status=401)
+            except User.DoesNotExist:
+                return JsonResponse({"error": "Invalid credentials."}, status=401)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        except Exception as e:
+            # Log the exception e
+            print(e)
+            return JsonResponse(
+                {"error": "An internal server error occurred."}, status=500
+            )
+    else:
+        return JsonResponse({"error": "Only POST method is allowed."}, status=405)
+
+
+@csrf_exempt
+def logout_view(request):
+    if request.method == "POST":
+        try:
+            request.session.flush()
+            return JsonResponse({"message": "Logout successful."}, status=200)
+        except Exception as e:
+            # Log the exception e
+            print(e)
+            return JsonResponse(
+                {"error": "An internal server error occurred during logout."},
+                status=500,
+            )
+    else:
+        return JsonResponse({"error": "Only POST method is allowed."}, status=405)
+
+
+# --- Existing RBAC Views ---
 
 
 @csrf_exempt
