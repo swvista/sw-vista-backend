@@ -7,21 +7,24 @@ from .controller.permission import (
     get_permission,
     update_permission,
 )
-from .controller.relationship import (
-    map_role_to_permission,
-    map_user_to_role,
-    unmap_role_permission,
-    unmap_user_role,
-)
 from .controller.role import (
     create_role,
     delete_role,
     get_role,
     get_role_permission,
+    map_role_to_permission,
+    unmap_role_permission,
     update_role,
 )
-from .controller.user import create_user, delete_user, get_user, update_user
-from .models import UserRole
+from .controller.user import (
+    create_user,
+    delete_user,
+    get_user,
+    map_user_to_role,
+    unmap_user_role,
+    update_user,
+)
+from .models import Role, User, UserRole
 from .serializers import UserRoleSerializer
 
 # Create your views here.
@@ -103,8 +106,33 @@ def role_permission(request):
 def get_users_role(request):
     if request.method == "GET":
         user_roles = UserRole.objects.all()
+        print("user_roles")
         serializer = UserRoleSerializer(user_roles, many=True)
-        return JsonResponse(serializer.data, safe=False, status=200)
+        print("serializer")
+        print(serializer.data)
+
+        all_users_data = []
+
+        for user_role in user_roles:
+            user = User.objects.get(id=user_role.user_id)
+            role = Role.objects.get(id=user_role.role_id)
+            all_users_data.append(
+                {
+                    "username": user.username,
+                    "email": user.email,
+                    "role": {
+                        "id": role.id,
+                        "name": role.name,
+                        "description": role.description,
+                        "permissions": [
+                            {"id": permission.id, "name": permission.name}
+                            for permission in role.permissions.all()
+                        ],
+                    },
+                }
+            )
+
+        return JsonResponse(all_users_data, safe=False, status=200)
     else:
         return JsonResponse({"message": "test GET"})
 
