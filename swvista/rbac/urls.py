@@ -19,9 +19,4 @@ urlpatterns = [
         views.get_user_role_by_role_id,
         name="get_user_role_by_role_id",
     ),
-    path(
-        "get_user_role_by_user_id_and_role_id/<int:user_id>/<int:role_id>/",
-        views.get_user_role_by_user_id_and_role_id,
-        name="get_user_role_by_user_id_and_role_id",
-    ),
 ]

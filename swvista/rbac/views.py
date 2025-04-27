@@ -140,8 +140,22 @@ def get_users_role(request):
 def get_user_role_by_user_id(request, user_id):
     if request.method == "GET":
         user_role = UserRole.objects.get(user_id=user_id)
-        serializer = UserRoleSerializer(user_role)
-        return JsonResponse(serializer.data, safe=False, status=200)
+        user = User.objects.get(id=user_id)
+        role = Role.objects.get(id=user_role.role_id)
+        user_role_data = {
+            "username": user.username,
+            "email": user.email,
+            "role": {
+                "id": role.id,
+                "name": role.name,
+                "description": role.description,
+                "permissions": [
+                    {"id": permission.id, "name": permission.name}
+                    for permission in role.permissions.all()
+                ],
+            },
+        }
+        return JsonResponse(user_role_data, safe=False, status=200)
     else:
         return JsonResponse({"message": "test GET"})
 
@@ -149,8 +163,22 @@ def get_user_role_by_user_id(request, user_id):
 def get_user_role_by_role_id(request, role_id):
     if request.method == "GET":
         user_role = UserRole.objects.get(role_id=role_id)
-        serializer = UserRoleSerializer(user_role)
-        return JsonResponse(serializer.data, safe=False, status=200)
+        user = User.objects.get(id=user_role.user_id)
+        role = Role.objects.get(id=role_id)
+        user_role_data = {
+            "username": user.username,
+            "email": user.email,
+            "role": {
+                "id": role.id,
+                "name": role.name,
+                "description": role.description,
+                "permissions": [
+                    {"id": permission.id, "name": permission.name}
+                    for permission in role.permissions.all()
+                ],
+            },
+        }
+        return JsonResponse(user_role_data, safe=False, status=200)
     else:
         return JsonResponse({"message": "test GET"})
 
