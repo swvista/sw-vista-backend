@@ -1,0 +1,29 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0 # Use the latest stable version
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+-   repo: https://github.com/psf/black
+    rev: 24.4.2 # Use the latest stable version
+    hooks:
+    -   id: black
+        language_version: python3 # Specify your Python version if needed
+-   repo: https://github.com/pycqa/isort
+    rev: 5.13.2 # Use the latest stable version
+    hooks:
+    -   id: isort
+        name: isort (python)
+        args: ["--profile", "black"] # Make isort compatible with black
+-   repo: https://github.com/PyCQA/flake8
+    rev: 7.1.0 # Use the latest stable version
+    hooks:
+    -   id: flake8
+        # Optional: Add args if needed, e.g., --max-line-length=88 to match black
+        args: ["--max-line-length=100", "--ignore=E203,W503"]
+        # E203: whitespace before ':' (often conflicts with black)
+        # W503: line break before binary operator (black prefers after)
