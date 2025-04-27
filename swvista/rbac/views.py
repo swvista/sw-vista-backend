@@ -27,6 +27,9 @@ from .controller.user import (
     unmap_user_role,
     update_user,
 )
+
+# Import the custom decorator
+from .decorators import session_login_required
 from .models import Role, User, UserRole
 from .serializers import UserRoleSerializer
 
@@ -59,7 +62,10 @@ def login_view(request):
                     request.session["user_id"] = user.id
                     request.session["username"] = user.username
                     # Optionally store role/permissions if needed frequently, but be mindful of session size
-                    # request.session['role'] = user.role.name
+                    request.session["role"] = user.role.name
+                    request.session["permissions"] = [
+                        permission.name for permission in user.role.permissions.all()
+                    ]
 
                     return JsonResponse(
                         {
@@ -103,6 +109,29 @@ def logout_view(request):
         return JsonResponse({"error": "Only POST method is allowed."}, status=405)
 
 
+@csrf_exempt
+@session_login_required
+def me_view(request):
+    if request.method == "GET":
+        user_id = request.session.get("user_id")
+        if user_id:
+            # User is logged in, retrieve info from session
+            user_info = {
+                "user_id": user_id,
+                "username": request.session.get("username"),
+                "role": request.session.get("role"),
+                "permissions": request.session.get(
+                    "permissions", []
+                ),  # Default to empty list if not found
+            }
+            return JsonResponse(user_info, status=200)
+        else:
+            # User is not logged in
+            return JsonResponse({"error": "Not authenticated"}, status=401)
+    else:
+        return JsonResponse({"error": "Only GET method is allowed."}, status=405)
+
+
 # --- Existing RBAC Views ---
 
 
@@ -115,6 +144,7 @@ def index(request):
 
 
 @ensure_csrf_cookie
+@session_login_required
 def user(request):
     if request.method == "POST":
         return create_user(request)
@@ -129,6 +159,7 @@ def user(request):
 
 
 @ensure_csrf_cookie
+@session_login_required
 def role(request):
     if request.method == "POST":
         return create_role(request)
@@ -144,6 +175,7 @@ def role(request):
 
 
 @ensure_csrf_cookie
+@session_login_required
 def permission(request):
     if request.method == "POST":
         return create_permission(request)

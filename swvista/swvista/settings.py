@@ -122,3 +122,15 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# --- Custom Settings ---
+
+# Redirect location for login-required views
+LOGIN_URL = "/api/v1/auth/login/"
+
+# Optional: You might also want to set LOGIN_REDIRECT_URL (where to go after successful login)
+# LOGIN_REDIRECT_URL = '/' # Example: Redirect to homepage
+
+# Optional: You might also want to set LOGOUT_REDIRECT_URL (where to go after logout)
+# LOGOUT_REDIRECT_URL = '/api/v1/auth/login/' # Example: Redirect to login page after logout
