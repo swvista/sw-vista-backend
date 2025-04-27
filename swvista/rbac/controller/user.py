@@ -43,14 +43,33 @@ def update_user(request):
     serializer = UserSerializer(user, data=body)
     if serializer.is_valid():
         serializer.save()
-        return JsonResponse(serializer.data, status=200)
+        user_data = {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "role": {
+                "id": user.role.id,
+                "name": user.role.name,
+                "description": user.role.description,
+                "permissions": [
+                    {"id": permission.id, "name": permission.name}
+                    for permission in user.role.permissions.all()
+                ],
+            },
+        }
+        return JsonResponse(user_data, status=200)
     return JsonResponse(serializer.errors, status=400)
 
 
 def delete_user(request):
-    user = User.objects.get(id=request.body["id"])
-    user.delete()
-    return JsonResponse({"message": "User deleted successfully"}, status=200)
+    body = json.loads(request.body)
+    user = User.objects.get(id=int(body["id"]))
+    print(user)
+    if user:
+        user.delete()
+        return JsonResponse({"message": "User deleted successfully"}, status=200)
+    else:
+        return JsonResponse({"message": "User not found"}, status=404)
 
 
 def map_user_to_role(request):

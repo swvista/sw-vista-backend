@@ -10,8 +10,21 @@ def create_role(request):
     body = json.loads(request.body)
     serializer = RoleSerializer(data=body)
     if serializer.is_valid():
-        serializer.save()
-        return JsonResponse(serializer.data, status=201)
+        role_instance = serializer.save()
+        role_data = {
+            "id": role_instance.id,
+            "name": role_instance.name,
+            "description": role_instance.description,
+            "permissions": [
+                {
+                    "id": permission.id,
+                    "name": permission.name,
+                    "description": permission.description,
+                }
+                for permission in role_instance.permissions.all()
+            ],
+        }
+        return JsonResponse(role_data, status=201)
     return JsonResponse(serializer.errors, status=400)
 
 
@@ -39,24 +52,59 @@ def update_role(request):
     if role:
         serializer = RoleSerializer(role, data=body)
         if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=200)
+            role_instance = serializer.save()
+            role_data = {
+                "id": role_instance.id,
+                "name": role_instance.name,
+                "description": role_instance.description,
+                "permissions": [
+                    {
+                        "id": permission.id,
+                        "name": permission.name,
+                        "description": permission.description,
+                    }
+                    for permission in role_instance.permissions.all()
+                ],
+            }
+            return JsonResponse(role_data, status=200)
         return JsonResponse(serializer.errors, status=400)
     else:
         return JsonResponse({"message": "Role not found"}, status=404)
 
 
 def delete_role(request):
-    role = Role.objects.get(id=request.body["id"])
+    body = json.loads(request.body)
+    role = Role.objects.get(id=body["id"])
     if role:
-        role.delete()
-        return JsonResponse({"message": "Role deleted successfully"}, status=200)
+        # Store data before deletion
+        deleted_role_data = {
+            "id": role.id,
+            "name": role.name,
+            "description": role.description,
+            "permissions": [
+                {
+                    "id": permission.id,
+                    "name": permission.name,
+                    "description": permission.description,
+                }
+                for permission in role.permissions.all()  # Access permissions BEFORE deleting
+            ],
+        }
+        deleted_count, _ = role.delete()  # role.delete() returns a tuple
+        if deleted_count > 0:  # Check if deletion was successful
+            return JsonResponse(deleted_role_data, status=200)
+        else:
+            return JsonResponse(
+                {"message": "Role not deleted"}, status=400
+            )  # Should likely be different status/error
     else:
+        # This 'else' might be redundant if .get() raises DoesNotExist
         return JsonResponse({"message": "Role not found"}, status=404)
 
 
 def get_role_permission(request):
-    role = Role.objects.get(id=request.body["id"])
+    body = json.loads(request.body)
+    role = Role.objects.get(id=body["id"])
     if role:
         serializer = RolePermissionSerializer(role, many=True)
         return JsonResponse(serializer.data, safe=False, status=200)

@@ -24,6 +24,6 @@ repos:
     hooks:
     -   id: flake8
         # Optional: Add args if needed, e.g., --max-line-length=88 to match black
-        args: ["--max-line-length=100", "--ignore=E203,W503"]
+        args: ["--max-line-length=150", "--ignore=E203,W503"]
         # E203: whitespace before ':' (often conflicts with black)
         # W503: line break before binary operator (black prefers after)

@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
 from .controller.permission import (
     create_permission,
@@ -30,7 +30,7 @@ from .serializers import UserRoleSerializer
 # Create your views here.
 
 
-@ensure_csrf_cookie
+@csrf_exempt
 def index(request):
     if request.method == "POST":
         return JsonResponse({"message": "test POST"})

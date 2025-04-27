@@ -32,9 +32,15 @@ def update_permission(request):
 
 
 def delete_permission(request):
-    permission = Permission.objects.get(id=request.body["id"])
+    body = json.loads(request.body)
+    permission = Permission.objects.get(id=body["id"])
     if permission:
+        permission_data = {
+            "id": permission.id,
+            "name": permission.name,
+            "description": permission.description,
+        }
         permission.delete()
-        return JsonResponse({"message": "Permission deleted successfully"}, status=200)
+        return JsonResponse(permission_data, status=200)
     else:
         return JsonResponse({"message": "Permission not found"}, status=404)
