@@ -2,9 +2,6 @@ import json
 
 from django.http import JsonResponse
 
-from swvista.constants import CAN_READ_USERS
-
-from ..decorators import check_user_permission
 from ..models import User, UserRole
 from ..serializers import UserRoleSerializer, UserSerializer
 
@@ -18,8 +15,8 @@ def create_user(request):
     return JsonResponse(serializer.errors, status=400)
 
 
-@check_user_permission(CAN_READ_USERS)
 def get_user(request):
+
     all_users = User.objects.all()
     all_users_data = []
     for user in all_users:

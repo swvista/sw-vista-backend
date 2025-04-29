@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -20,8 +21,9 @@ class Role(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class User(models.Model):
-    username = models.CharField(max_length=255)
+class User(AbstractUser):
+    username = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     password = models.CharField(max_length=255)
     email = models.EmailField(max_length=255)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)

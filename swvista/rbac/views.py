@@ -144,7 +144,7 @@ def index(request):
 
 
 @ensure_csrf_cookie
-@session_login_required
+# @session_login_required
 def user(request):
     if request.method == "POST":
         return create_user(request)
@@ -159,7 +159,7 @@ def user(request):
 
 
 @ensure_csrf_cookie
-@session_login_required
+# @session_login_required
 def role(request):
     if request.method == "POST":
         return create_role(request)
@@ -175,7 +175,7 @@ def role(request):
 
 
 @ensure_csrf_cookie
-@session_login_required
+# @session_login_required
 def permission(request):
     if request.method == "POST":
         return create_permission(request)

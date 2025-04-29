@@ -3,7 +3,7 @@ from functools import wraps
 from django.http import JsonResponse
 from django.utils import timezone
 
-from .models import AuditLog
+from .models import AuditLog, User
 
 
 def session_login_required(view_func):
@@ -15,9 +15,11 @@ def session_login_required(view_func):
     @wraps(view_func)  # Preserves original view function metadata
     def _wrapped_view(request, *args, **kwargs):
         if not request.session.get("user_id"):
-            return JsonResponse({"error": "Authentication required."}, status=401)
-        # If logged in, proceed with the original view
-        return view_func(request, *args, **kwargs)
+            logged_in_user = User.objects.get(id=request.session.get("user_id"))
+            if not logged_in_user:
+                return JsonResponse({"error": "Authentication required."}, status=401)
+            # If logged in, proceed with the original view
+            return view_func(request, *args, **kwargs)
 
     return _wrapped_view
 

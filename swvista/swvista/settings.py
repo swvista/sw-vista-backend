@@ -123,6 +123,8 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# model for auth user
+AUTH_USER_MODEL = "rbac.User"
 
 # --- Custom Settings ---
 
