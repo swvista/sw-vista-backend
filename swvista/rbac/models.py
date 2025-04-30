@@ -7,6 +7,31 @@ from django.db import models
 
 
 class Permission(models.Model):
+    """
+    Permissions are the smallest unit of access control.
+    They are grouped into P1 (Resource Type) and P2 (Action).
+    """
+
+    P1_CHOICES = (
+        ("admin", "admin"),
+        ("club", "club"),
+        ("booking", "booking"),
+        ("event", "event"),
+        ("venue", "venue"),
+        ("user", "user"),
+        ("role", "role"),
+        ("permission", "permission"),
+        ("audit_log", "audit_log"),
+    )
+    P2_CHOICES = (
+        ("read", "read"),
+        ("write", "write"),
+        ("delete", "delete"),
+        ("update", "update"),
+    )
+    id = models.AutoField(primary_key=True)
+    P1 = models.CharField(max_length=255, choices=P1_CHOICES, null=True, blank=True)
+    P2 = models.CharField(max_length=255, choices=P2_CHOICES, null=True, blank=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -14,7 +39,7 @@ class Permission(models.Model):
 
 
 class Role(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     permissions = models.ManyToManyField(Permission)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -24,6 +49,9 @@ class Role(models.Model):
 class User(AbstractUser):
     username = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
+    registration_id = models.CharField(
+        max_length=255, unique=True, null=True, blank=True
+    )
     password = models.CharField(max_length=255)
     email = models.EmailField(max_length=255)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)

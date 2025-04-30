@@ -7,19 +7,15 @@ from .models import AuditLog, User
 
 
 def session_login_required(view_func):
-    """
-    Decorator to check if a user is logged in based on session data.
-    Similar to @login_required, but uses our manual session key.
-    """
-
-    @wraps(view_func)  # Preserves original view function metadata
+    @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        if not request.session.get("user_id"):
-            logged_in_user = User.objects.get(id=request.session.get("user_id"))
-            if not logged_in_user:
-                return JsonResponse({"error": "Authentication required."}, status=401)
-            # If logged in, proceed with the original view
-            return view_func(request, *args, **kwargs)
+        user_id = request.session.get("user_id")
+        if not user_id:
+            return JsonResponse({"error": "Authentication required."}, status=401)
+        user_data = User.objects.get(id=user_id)
+        if not user_data:
+            return JsonResponse({"error": "Authentication required."}, status=401)
+        return view_func(request, *args, **kwargs)
 
     return _wrapped_view
 

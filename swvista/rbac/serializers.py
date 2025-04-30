@@ -25,7 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # Add 'password' to fields used for input, but it won't be in output due to write_only=True
-        fields = ["id", "username", "email", "role", "password"]
+        fields = ["username", "email", "role", "password", "name", "registration_id"]
         read_only_fields = ["id"]  # Make id read-only
 
     def create(self, validated_data):

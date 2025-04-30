@@ -64,7 +64,8 @@ def login_view(request):
                     # Optionally store role/permissions if needed frequently, but be mindful of session size
                     request.session["role"] = user.role.name
                     request.session["permissions"] = [
-                        permission.name for permission in user.role.permissions.all()
+                        {"P1": permission.P1, "P2": permission.P2}
+                        for permission in user.role.permissions.all()
                     ]
 
                     return JsonResponse(
@@ -114,15 +115,15 @@ def logout_view(request):
 def me_view(request):
     if request.method == "GET":
         user_id = request.session.get("user_id")
+        print("request.session", request.session)
+        print("user_id", user_id)
         if user_id:
             # User is logged in, retrieve info from session
             user_info = {
                 "user_id": user_id,
                 "username": request.session.get("username"),
                 "role": request.session.get("role"),
-                "permissions": request.session.get(
-                    "permissions", []
-                ),  # Default to empty list if not found
+                "permissions": request.session.get("permissions", []),
             }
             return JsonResponse(user_info, status=200)
         else:
