@@ -56,6 +56,9 @@ def venue(request):
 
     elif request.method == "POST":
         # Handle POST request
+        check = check_user_permission(request, roles["admin"], "venue", "write")
+        if check:
+            return check
         try:
             data = json.loads(request.body)
             serializer = VenueSerializer(data=data)
@@ -68,6 +71,9 @@ def venue(request):
 
     elif request.method == "PUT":
         # Handle PUT request for updating a venue
+        check = check_user_permission(request, roles["admin"], "venue", "write")
+        if check:
+            return check
         try:
             body = json.loads(request.body)
             venue = get_object_or_404(Venue, id=body["id"])
@@ -85,6 +91,9 @@ def venue(request):
 
     elif request.method == "DELETE":
         # Handle DELETE request
+        check = check_user_permission(request, roles["admin"], "venue", "delete")
+        if check:
+            return check
         try:
             body = json.loads(request.body)
             venue = get_object_or_404(Venue, id=body["id"])
