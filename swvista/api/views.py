@@ -11,21 +11,25 @@ from rbac.constants import roles
 def check_user_permission(request, role, p1, p2):
     if not request.session.get("user_id"):
         return JsonResponse({"message": "Unauthorized"}, status=401)
-    if request.session.get("role") != role:
-        return JsonResponse({"message": "Unauthorized"}, status=401)
+
+    # Allow if user has the required role
+    if request.session.get("role") == role:
+        return None
+
+    # Allow if user has the required P1/P2 permission
     user_permissions = request.session.get("permissions", [])
-    if not any(
-        perm.get("P1") == p1 and perm.get("P2") == p2 for perm in user_permissions
-    ):
-        return JsonResponse({"message": "Unauthorized"}, status=401)
-    return None
+    if any(perm.get("P1") == p1 and perm.get("P2") == p2 for perm in user_permissions):
+        return None
+
+    # If neither, deny access
+    return JsonResponse({"message": "Unauthorized"}, status=401)
 
 
 @csrf_exempt
 def venue(request):
     if request.method == "GET":
         check = check_user_permission(request, roles["admin"], "venue", "read")
-        if check:
+        if check is not None:
             return check
 
         venues = Venue.objects.all()
@@ -106,5 +110,18 @@ def venue(request):
         except json.JSONDecodeError:
             return JsonResponse({"message": "Invalid JSON data"}, status=400)
 
+    else:
+        return JsonResponse({"message": "Invalid request method"}, status=405)
+
+
+@csrf_exempt
+def get_venue_by_id(request, id):
+    if request.method == "GET":
+        check = check_user_permission(request, roles["admin"], "venue", "read")
+        if check is not None:
+            return JsonResponse({"message": "Unauthorized"}, status=401)
+        venue = get_object_or_404(Venue, id=id)
+        serializer = VenueSerializer(venue)
+        return JsonResponse(serializer.data, safe=False)
     else:
         return JsonResponse({"message": "Invalid request method"}, status=405)

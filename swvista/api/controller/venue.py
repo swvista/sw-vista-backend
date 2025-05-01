@@ -1,6 +1,8 @@
 from api.models import Venue
 from django.http import JsonResponse
 
+# Controllers might be redundant, but they are useful for testing and development.
+
 
 def get_venue_by_id(request, id):
     venue = Venue.objects.get_venue_by_id(id)
