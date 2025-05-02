@@ -138,3 +138,13 @@ LOGIN_URL = "/api/v1/auth/login/"
 
 # Optional: You might also want to set LOGOUT_REDIRECT_URL (where to go after logout)
 # LOGOUT_REDIRECT_URL = '/api/v1/auth/login/' # Example: Redirect to login page after logout
+
+CSRF_USE_SESSIONS = False  # Default (uses cookies)
+CSRF_COOKIE_HTTPONLY = False  # Required for JS to read the cookie
+
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+]

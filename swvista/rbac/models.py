@@ -55,6 +55,7 @@ class User(AbstractUser):
     password = models.CharField(max_length=255)
     email = models.EmailField(max_length=255)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -1,127 +1,102 @@
-import json
-
-from api.models import Venue
-from api.serializers import VenueSerializer
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
-from rbac.constants import roles
-
-
-def check_user_permission(request, role, p1, p2):
-    if not request.session.get("user_id"):
-        return JsonResponse({"message": "Unauthorized"}, status=401)
-
-    # Allow if user has the required role
-    if request.session.get("role") == role:
-        return None
-
-    # Allow if user has the required P1/P2 permission
-    user_permissions = request.session.get("permissions", [])
-    if any(perm.get("P1") == p1 and perm.get("P2") == p2 for perm in user_permissions):
-        return None
-
-    # If neither, deny access
-    return JsonResponse({"message": "Unauthorized"}, status=401)
-
-
-@csrf_exempt
-def venue(request):
-    if request.method == "GET":
-        check = check_user_permission(request, roles["admin"], "venue", "read")
-        if check is not None:
-            return check
-
-        venues = Venue.objects.all()
-        id = request.GET.get("id")
-        name = request.GET.get("name")
-        address = request.GET.get("address")
-        latitude = request.GET.get("latitude")
-        longitude = request.GET.get("longitude")
-
-        if id:
-            venues = venues.filter(id=id)
-        if name:
-            venues = venues.filter(name__icontains=name)
-        if address:
-            venues = venues.filter(address__icontains=address)
-        if latitude:
-            venues = venues.filter(latitude=latitude)
-        if longitude:
-            venues = venues.filter(longitude=longitude)
-
-        # If no venues are found
-        if not venues:
-            return JsonResponse({"message": "No venues found"}, status=404)
-
-        # Serialize and return venues
-        serializer = VenueSerializer(venues, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
-    elif request.method == "POST":
-        # Handle POST request
-        check = check_user_permission(request, roles["admin"], "venue", "write")
-        if check:
-            return check
-        try:
-            data = json.loads(request.body)
-            serializer = VenueSerializer(data=data)
-            if serializer.is_valid():
-                serializer.save()
-                return JsonResponse(serializer.data, status=201)
-            return JsonResponse(serializer.errors, status=400)
-        except json.JSONDecodeError:
-            return JsonResponse({"message": "Invalid JSON data"}, status=400)
-
-    elif request.method == "PUT":
-        # Handle PUT request for updating a venue
-        check = check_user_permission(request, roles["admin"], "venue", "write")
-        if check:
-            return check
-        try:
-            body = json.loads(request.body)
-            venue = get_object_or_404(Venue, id=body["id"])
-            serializer = VenueSerializer(venue, data=body)
-            if serializer.is_valid():
-                serializer.save()
-                return JsonResponse(serializer.data, status=200)
-            return JsonResponse(serializer.errors, status=400)
-        except KeyError:
-            return JsonResponse(
-                {"message": "ID is required for updating a venue"}, status=400
-            )
-        except json.JSONDecodeError:
-            return JsonResponse({"message": "Invalid JSON data"}, status=400)
-
-    elif request.method == "DELETE":
-        # Handle DELETE request
-        check = check_user_permission(request, roles["admin"], "venue", "delete")
-        if check:
-            return check
-        try:
-            body = json.loads(request.body)
-            venue = get_object_or_404(Venue, id=body["id"])
-            venue.delete()
-            return JsonResponse({"message": "Venue deleted successfully"}, status=200)
-        except KeyError:
-            return JsonResponse(
-                {"message": "ID is required to delete a venue"}, status=400
-            )
-        except json.JSONDecodeError:
-            return JsonResponse({"message": "Invalid JSON data"}, status=400)
-
-    else:
-        return JsonResponse({"message": "Invalid request method"}, status=405)
+from .controller.booking_approvals import (
+    approve_booking,
+    get_approval_history,
+    get_pending_approvals,
+    reject_booking,
+)
+from .controller.proposal import (
+    create_proposal,
+    delete_proposal,
+    get_all_proposals,
+    get_proposal_by_id,
+    update_proposal,
+)
+from .controller.venue import (
+    create_venue,
+    delete_venue,
+    get_all_venues,
+    get_venue_by_id,
+    update_venue,
+)
+from .controller.venue_booking import (
+    create_booking,
+    get_all_bookings,
+    get_booking_by_id,
+    update_booking,
+)
 
 
-@csrf_exempt
-def get_venue_by_id(request, id):
-    if request.method == "GET":
-        check = check_user_permission(request, roles["admin"], "venue", "read")
-        if check is not None:
-            return JsonResponse({"message": "Unauthorized"}, status=401)
-        venue = get_object_or_404(Venue, id=id)
-        serializer = VenueSerializer(venue)
-        return JsonResponse(serializer.data, safe=False)
-    else:
-        return JsonResponse({"message": "Invalid request method"}, status=405)
+# Venue API
+def get_all_venues_view(request):
+    return get_all_venues(request)
+
+
+def get_venue_by_id_view(request):
+    return get_venue_by_id(request)
+
+
+def get_create_venue_view(request):
+    return create_venue(request)
+
+
+def get_update_venue_view(request, id):
+    return update_venue(request, id)
+
+
+def delete_venue_view(request, id):
+    return delete_venue(request, id)
+
+
+# Proposal API
+def get_all_proposals_view(request):
+    return get_all_proposals(request)
+
+
+def get_proposal_by_id_view(request, id):
+    return get_proposal_by_id(request, id)
+
+
+def create_proposal_view(request):
+    return create_proposal(request)
+
+
+def update_proposal_view(request, id):
+    return update_proposal(request, id)
+
+
+def delete_proposal_view(request, id):
+    return delete_proposal(request, id)
+
+
+# Venue Booking API
+def create_venue_booking_view(request):
+    return create_booking(request)
+
+
+def get_all_bookings_view(request):
+    return get_all_bookings(request)
+
+
+def get_booking_by_id_view(request, id):
+    return get_booking_by_id(request, id)
+
+
+def update_booking_view(request, id):
+    return update_booking(request, id)
+
+
+# Booking Approvals API
+def approve_booking_view(request, id):
+    return approve_booking(request, id)
+
+
+def reject_booking_view(request, id):
+    return reject_booking(request, id)
+
+
+def get_pending_approvals_view(request):
+    return get_pending_approvals(request)
+
+
+def get_approval_history_view(request, id):
+    return get_approval_history(request, id)

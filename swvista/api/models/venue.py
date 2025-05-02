@@ -19,9 +19,10 @@ class VenueManager(models.Manager):
 
 
 class Venue(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     address = models.CharField(max_length=255)
     description = models.TextField()
+    capacity = models.IntegerField(default=0)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     image = models.ImageField(upload_to="venues/", null=True, blank=True)

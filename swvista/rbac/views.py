@@ -58,6 +58,7 @@ def login_view(request):
             try:
                 user = User.objects.get(username=username)
                 if check_password(password, user.password):
+
                     # Manually create session data
                     request.session["user_id"] = user.id
                     request.session["username"] = user.username
@@ -93,7 +94,7 @@ def login_view(request):
         return JsonResponse({"error": "Only POST method is allowed."}, status=405)
 
 
-@csrf_exempt
+@ensure_csrf_cookie
 def logout_view(request):
     if request.method == "POST":
         try:
@@ -110,8 +111,7 @@ def logout_view(request):
         return JsonResponse({"error": "Only POST method is allowed."}, status=405)
 
 
-@csrf_exempt
-@session_login_required
+@ensure_csrf_cookie
 def me_view(request):
     if request.method == "GET":
         user_id = request.session.get("user_id")
@@ -145,7 +145,7 @@ def index(request):
 
 
 @ensure_csrf_cookie
-# @session_login_required
+@session_login_required
 def user(request):
     if request.method == "POST":
         return create_user(request)
@@ -160,7 +160,7 @@ def user(request):
 
 
 @ensure_csrf_cookie
-# @session_login_required
+@session_login_required
 def role(request):
     if request.method == "POST":
         return create_role(request)
@@ -176,7 +176,7 @@ def role(request):
 
 
 @ensure_csrf_cookie
-# @session_login_required
+@session_login_required
 def permission(request):
     if request.method == "POST":
         return create_permission(request)
@@ -190,6 +190,7 @@ def permission(request):
         return JsonResponse({"message": "test GET"})
 
 
+@ensure_csrf_cookie
 def user_role(request):
     if request.method == "POST":
         return map_user_to_role(request)
@@ -201,6 +202,7 @@ def user_role(request):
         return JsonResponse({"message": "test GET"})
 
 
+@ensure_csrf_cookie
 def role_permission(request):
     if request.method == "POST":
         return map_role_to_permission(request)
@@ -212,6 +214,7 @@ def role_permission(request):
         return JsonResponse({"message": "test GET"})
 
 
+@ensure_csrf_cookie
 def get_users_role(request):
     if request.method == "GET":
         user_roles = UserRole.objects.all()
@@ -246,6 +249,7 @@ def get_users_role(request):
         return JsonResponse({"message": "test GET"})
 
 
+@ensure_csrf_cookie
 def get_user_role_by_user_id(request, user_id):
     if request.method == "GET":
         user_role = UserRole.objects.get(user_id=user_id)
@@ -269,6 +273,7 @@ def get_user_role_by_user_id(request, user_id):
         return JsonResponse({"message": "test GET"})
 
 
+@ensure_csrf_cookie
 def get_user_role_by_role_id(request, role_id):
     if request.method == "GET":
         user_role = UserRole.objects.get(role_id=role_id)
@@ -292,6 +297,7 @@ def get_user_role_by_role_id(request, role_id):
         return JsonResponse({"message": "test GET"})
 
 
+@ensure_csrf_cookie
 def get_user_role_by_user_id_and_role_id(request, user_id, role_id):
     if request.method == "GET":
         user_role = UserRole.objects.get(user_id=user_id, role_id=role_id)
