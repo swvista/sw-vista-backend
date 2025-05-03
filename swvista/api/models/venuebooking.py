@@ -30,8 +30,9 @@ class VenueBooking(models.Model):
         Proposal, on_delete=models.CASCADE, null=True, blank=True
     )
     event_type = models.IntegerField(choices=EVENT_TYPE, default=0)
+    # can be updated by the admin
     approval_stage = models.IntegerField(
-        default=0
+        default=0,
     )  # Tracks current approval stage (0-3)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_PENDING)
     booking_date = models.DateTimeField()

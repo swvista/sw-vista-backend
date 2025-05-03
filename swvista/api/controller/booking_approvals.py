@@ -42,7 +42,7 @@ def approve_booking(request, booking_id):
                     stage=booking.approval_stage,
                     defaults={
                         "approver_id": request.session.get("user_id"),
-                        "status": BookingApproval.APPROVAL_STATUS_APPROVED,
+                        "status": BookingApproval.APPROVAL_STATUS[1][0],
                         "comments": comments,
                     },
                 )
@@ -114,7 +114,7 @@ def reject_booking(request, booking_id):
                     stage=booking.approval_stage,
                     defaults={
                         "approver_id": request.session.get("user_id"),
-                        "status": BookingApproval.APPROVAL_STATUS_REJECTED,
+                        "status": BookingApproval.APPROVAL_STATUS[2][0],
                         "comments": comments,
                     },
                 )
@@ -147,23 +147,6 @@ def get_pending_approvals(request):
     if request.method == "GET":
         try:
 
-            user_permissions = request.session.get("permissions", [])
-
-            # Check if user has approve permission
-            has_approve_permission = any(
-                perm.get("P1") == "venue" and perm.get("P2") == "approve"
-                for perm in user_permissions
-            )
-
-            if not has_approve_permission:
-                return JsonResponse(
-                    {"error": "You do not have permission to approve bookings."},
-                    status=403,
-                )
-
-            # Get pending bookings at current approval stage
-            # This logic can be customized based on your specific requirements
-            # about which approver handles which stage
             pending_bookings = VenueBooking.objects.filter(
                 status=VenueBooking.STATUS_PENDING
             )

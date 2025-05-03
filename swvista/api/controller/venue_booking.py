@@ -10,8 +10,6 @@ from ..decorators import check_user_permission
 from ..models.venuebooking import VenueBooking
 from ..serializers import VenueBookingSerializer
 
-# CRUD Functions for VenueBooking
-
 
 @ensure_csrf_cookie
 @session_login_required
@@ -77,14 +75,24 @@ def update_booking(request, booking_id):
                 )
 
             data = json.loads(request.body)
-            serializer = VenueBookingSerializer(booking, data=data, partial=True)
+
+            serializer = VenueBookingSerializer(booking, data=data)
             if serializer.is_valid():
                 serializer.save()
+                # Log the update (example)
+                # logger.info(f"Booking {booking_id} updated by user {request.user.id}")
                 return JsonResponse(serializer.data, status=200)
-            return JsonResponse(serializer.errors, status=400)
+            else:
+                # Log serializer errors for debugging
+                # logger.error(f"Serializer errors: {serializer.errors}")
+                return JsonResponse(serializer.errors, status=400)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        except VenueBooking.DoesNotExist:  # Specific exception
+            return JsonResponse({"error": "Booking not found."}, status=404)
         except Exception as e:
+            # Log the exception
+            # logger.exception("Unexpected error during booking update")
             return JsonResponse({"error": str(e)}, status=500)
     return JsonResponse({"error": "Only PUT method is allowed."}, status=405)
 

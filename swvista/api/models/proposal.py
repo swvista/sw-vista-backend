@@ -8,7 +8,7 @@ class Proposal(models.Model):
         (1, "approved"),
         (2, "rejected"),
     ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     description = models.TextField(default="")
     requested_date = models.DateTimeField(auto_now=False, auto_now_add=False)

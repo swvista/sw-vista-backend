@@ -25,6 +25,11 @@ urlpatterns = [
     path(
         "proposal/delete/<int:id>/", views.delete_proposal_view, name="delete_proposal"
     ),
+    path(
+        "proposal/get-all-by-user/",
+        views.get_all_proposals_by_user_view,
+        name="get_all_proposals_by_user",
+    ),
     # Venue Booking API
     path(
         "booking/create/", views.create_venue_booking_view, name="create_venue_booking"

@@ -8,6 +8,7 @@ from .controller.proposal import (
     create_proposal,
     delete_proposal,
     get_all_proposals,
+    get_all_proposals_by_user,
     get_proposal_by_id,
     update_proposal,
 )
@@ -31,8 +32,8 @@ def get_all_venues_view(request):
     return get_all_venues(request)
 
 
-def get_venue_by_id_view(request):
-    return get_venue_by_id(request)
+def get_venue_by_id_view(request, id):
+    return get_venue_by_id(request, id)
 
 
 def get_create_venue_view(request):
@@ -50,6 +51,10 @@ def delete_venue_view(request, id):
 # Proposal API
 def get_all_proposals_view(request):
     return get_all_proposals(request)
+
+
+def get_all_proposals_by_user_view(request):
+    return get_all_proposals_by_user(request)
 
 
 def get_proposal_by_id_view(request, id):
