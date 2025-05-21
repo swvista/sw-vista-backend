@@ -20,31 +20,32 @@ def session_login_required(view_func):
     return _wrapped_view
 
 
-def check_user_permission(permission_name):
+def check_user_permission(required_permissions):
     """
-    Decorator factory to check if the logged-in user has a specific permission.
+    Decorator to check for complex permission objects like:
+    [{'subject': 'venue', 'action': 'read'}]
     """
 
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
-            user_permissions = request.session.get(
-                "permissions", []
-            )  # Default to empty list
-            if not request.session.get("user_id"):  # Check login first
+            user_id = request.session.get("user_id")
+            username = request.session.get("username")
+            if not user_id:
                 return JsonResponse({"error": "Authentication required."}, status=401)
 
-            # Ensure user_permissions is a set for contains check if it's stored as a list
-            if isinstance(user_permissions, list):
-                user_permissions = set(user_permissions)
-
-            if permission_name in user_permissions:
+            user_permissions = request.session.get("permissions", [])
+            if username == "admin" or username == "ssp":
                 return view_func(request, *args, **kwargs)
-            else:
-                return JsonResponse(
-                    {"error": "You do not have permission to access this resource."},
-                    status=403,
-                )
+            # Match each required permission object
+            for required in required_permissions:
+                if required not in user_permissions:
+                    return JsonResponse(
+                        {"error": "Permission denied for action."},
+                        status=403,
+                    )
+
+            return view_func(request, *args, **kwargs)
 
         return _wrapped_view
 

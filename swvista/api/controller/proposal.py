@@ -3,10 +3,9 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
-from rbac.constants import roles
+from rbac.decorators import check_user_permission
 from rbac.models import User
 
-from ..decorators import check_user_permission
 from ..models.proposal import Proposal
 from ..serializers import ProposalSerializer
 
@@ -16,7 +15,7 @@ from ..serializers import ProposalSerializer
 
 @require_http_methods(["GET"])
 @ensure_csrf_cookie
-@check_user_permission([roles["admin"], roles["user"]], "proposal", "read")
+@check_user_permission([{"subject": "proposal", "action": "read"}])
 def get_all_proposals_by_user(request):
     # Retrieve user ID from session
     user_id = request.session.get("user_id")
@@ -38,7 +37,7 @@ def get_all_proposals_by_user(request):
 
 @require_http_methods(["GET"])
 @ensure_csrf_cookie
-@check_user_permission([roles["admin"], roles["user"]], "proposal", "read")
+@check_user_permission([{"subject": "proposal", "action": "read"}])
 def get_all_proposals(request):
     # Retrieve all proposal objects
     proposals = Proposal.objects.all()
@@ -49,7 +48,7 @@ def get_all_proposals(request):
 
 @require_http_methods(["GET"])
 @ensure_csrf_cookie
-@check_user_permission([roles["admin"], roles["user"]], "proposal", "read")
+@check_user_permission([{"subject": "proposal", "action": "read"}])
 def get_proposal_by_id(request, id):
     try:
         # Retrieve a specific proposal by its ID
@@ -64,7 +63,7 @@ def get_proposal_by_id(request, id):
 
 @require_http_methods(["POST"])
 @ensure_csrf_cookie
-@check_user_permission([roles["admin"], roles["user"]], "proposal", "write")
+@check_user_permission([{"subject": "proposal", "action": "read"}])
 def create_proposal(request):
     try:
         # Parse JSON data from the request body
@@ -110,11 +109,13 @@ def create_proposal(request):
 
 @require_http_methods(["PUT"])
 @ensure_csrf_cookie
-@check_user_permission([roles["admin"], roles["user"]], "proposal", "write")
+@check_user_permission([{"subject": "proposal", "action": "update"}])
 def update_proposal(request, id):
     try:
         # Retrieve the proposal to update
-        proposal = Proposal.objects.get(id=id)
+        body = json.loads(request.body)
+        print(body)
+        proposal = Proposal.objects.get(id=body["id"])
     except Proposal.DoesNotExist:
         # Return 404 if the proposal doesn't exist
         return JsonResponse({"message": "Proposal not found."}, status=404)
@@ -131,6 +132,8 @@ def update_proposal(request, id):
     try:
         # Parse JSON data from the request body
         data = json.loads(request.body)
+        data.pop("status", None)
+
     except json.JSONDecodeError:
         # Return 400 if JSON is invalid
         return JsonResponse({"message": "Invalid JSON format"}, status=400)
@@ -149,7 +152,7 @@ def update_proposal(request, id):
 
 @require_http_methods(["DELETE"])
 @ensure_csrf_cookie
-@check_user_permission([roles["admin"], roles["user"]], "proposal", "delete")
+@check_user_permission([{"subject": "proposal", "action": "delete"}])
 def delete_proposal(request, id):
     try:
         # Retrieve the proposal to delete

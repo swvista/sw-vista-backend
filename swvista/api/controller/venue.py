@@ -8,10 +8,9 @@ from django.http import JsonResponse  # Import Http404
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
-from rbac.constants import roles
 
 # Assuming the decorators module is one level up from the current views file
-from ..decorators import check_user_permission
+from rbac.decorators import check_user_permission
 
 # Note on Controllers: In Django's MVT pattern, these view functions often act
 # as the "Controller" logic. They handle the request, interact with models,
@@ -20,7 +19,7 @@ from ..decorators import check_user_permission
 
 @require_http_methods(["GET"])
 @ensure_csrf_cookie
-@check_user_permission([roles["admin"], roles["user"]], "venue", "read")
+@check_user_permission([{"subject": "venue", "action": "read"}])
 def get_all_venues(request):
     """
     Retrieves a list of all venues.
@@ -40,7 +39,7 @@ def get_all_venues(request):
 
 @require_http_methods(["GET"])
 @ensure_csrf_cookie
-@check_user_permission([roles["admin"], roles["user"]], "venue", "read")
+@check_user_permission([{"subject": "permission", "action": "read"}])
 def get_venue_by_id(request, id):
     """
     Retrieves a single venue by its ID.
@@ -58,7 +57,7 @@ def get_venue_by_id(request, id):
 
 @require_http_methods(["POST"])
 @ensure_csrf_cookie
-@check_user_permission([roles["admin"], roles["user"]], "venue", "write")
+@check_user_permission([{"subject": "permission", "action": "create"}])
 def create_venue(request):
     """
     Creates a new venue.
@@ -100,7 +99,7 @@ def create_venue(request):
 
 @require_http_methods(["PUT"])  # Or ["PUT", "PATCH"] if using partial=True below
 @ensure_csrf_cookie
-@check_user_permission([roles["admin"], roles["user"]], "venue", "write")
+@check_user_permission([{"subject": "permission", "action": "update"}])
 def update_venue(request, id):
     """
     Updates an existing venue by its ID.
@@ -129,7 +128,7 @@ def update_venue(request, id):
 
 @require_http_methods(["DELETE"])
 @ensure_csrf_cookie
-@check_user_permission([roles["admin"], roles["user"]], "venue", "delete")
+@check_user_permission([{"subject": "permission", "action": "delete"}])
 def delete_venue(request, id):
     """
     Deletes a venue by its ID.

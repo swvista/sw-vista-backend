@@ -12,7 +12,7 @@ class Permission(models.Model):
     They are grouped into P1 (Resource Type) and P2 (Action).
     """
 
-    P1_CHOICES = (
+    SUBJECT_CHOICES = (
         ("admin", "admin"),
         ("club", "club"),
         ("booking", "booking"),
@@ -23,15 +23,20 @@ class Permission(models.Model):
         ("permission", "permission"),
         ("audit_log", "audit_log"),
     )
-    P2_CHOICES = (
-        ("read", "read"),
-        ("write", "write"),
-        ("delete", "delete"),
-        ("update", "update"),
+    ACTION_CHOICES = (
+        ("create", "create"),  # POST
+        ("read", "read"),  # GET
+        ("write", "write"),  # PUT, PATCH
+        ("delete", "delete"),  # DELETE
+        ("update", "update"),  # UPDATE
     )
     id = models.AutoField(primary_key=True)
-    P1 = models.CharField(max_length=255, choices=P1_CHOICES, null=True, blank=True)
-    P2 = models.CharField(max_length=255, choices=P2_CHOICES, null=True, blank=True)
+    action = models.CharField(
+        max_length=255, choices=ACTION_CHOICES, null=True, blank=True
+    )
+    subject = models.CharField(
+        max_length=255, choices=SUBJECT_CHOICES, null=True, blank=True
+    )
     name = models.CharField(max_length=255)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

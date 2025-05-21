@@ -4,6 +4,17 @@ from .controller.booking_approvals import (
     get_pending_approvals,
     reject_booking,
 )
+from .controller.club import (
+    add_member_to_club,
+    create_club,
+    delete_club,
+    get_all_clubs,
+    get_all_members_of_club,
+    get_club_by_id,
+    get_my_clubs,
+    remove_member_from_club,
+    update_club,
+)
 from .controller.proposal import (
     create_proposal,
     delete_proposal,
@@ -105,3 +116,40 @@ def get_pending_approvals_view(request):
 
 def get_approval_history_view(request, id):
     return get_approval_history(request, id)
+
+
+# Club API
+def create_club_view(request):
+    return create_club(request)
+
+
+def get_all_clubs_view(request):
+    return get_all_clubs(request)
+
+
+def get_club_by_id_view(request, id):
+    return get_club_by_id(request, id)
+
+
+def update_club_view(request, id):
+    return update_club(request, id)
+
+
+def delete_club_view(request, id):
+    return delete_club(request, id)
+
+
+def add_member_to_club_view(request, id):
+    return add_member_to_club(request, id)
+
+
+def remove_member_from_club_view(request):
+    return remove_member_from_club(request)
+
+
+def get_all_members_of_club_view(request, id):
+    return get_all_members_of_club(request, id)
+
+
+def get_my_clubs_view(request):
+    return get_my_clubs(request)

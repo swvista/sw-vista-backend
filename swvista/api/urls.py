@@ -55,4 +55,26 @@ urlpatterns = [
     path(
         "approvals/reject/<int:id>/", views.reject_booking_view, name="reject_booking"
     ),
+    # Club API
+    path("club/create/", views.create_club_view, name="create_club"),
+    path("club/get-all/", views.get_all_clubs_view, name="get_all_clubs"),
+    path("club/get-by-id/<int:id>/", views.get_club_by_id_view, name="get_club_by_id"),
+    path("club/update/<int:id>/", views.update_club_view, name="update_club"),
+    path("club/delete/<int:id>/", views.delete_club_view, name="delete_club"),
+    path(
+        "club/add-member/<int:id>/",
+        views.add_member_to_club_view,
+        name="add_member_to_club",
+    ),
+    path(
+        "club/remove-member/",
+        views.remove_member_from_club_view,
+        name="remove_member_from_club",
+    ),
+    path(
+        "club/get-all-members/<int:id>/",
+        views.get_all_members_of_club_view,
+        name="get_all_members_of_club",
+    ),
+    path("club/get-my-clubs/", views.get_my_clubs_view, name="get_my_clubs"),
 ]

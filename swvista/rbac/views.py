@@ -51,12 +51,17 @@ def login_view(request):
                     {"error": "Username and password are required."}, status=400
                 )
 
-            # !! SECURITY WARNING !!
-            # The current User model stores passwords in plain text.
-            # This is highly insecure and should be changed to use password hashing (e.g., Django's built-in password management).
-            # Proceeding with plain text comparison as per constraint "do not change existing models".
             try:
                 user = User.objects.get(username=username)
+                role = user.role
+
+                # Get permission IDs or full permission list
+                permission_ids = [
+                    permission.id for permission in role.permissions.all()
+                ]
+                print("Permissions:", permission_ids)
+
+                # get all permissions and sent as response
                 if check_password(password, user.password):
 
                     # Manually create session data
@@ -65,7 +70,7 @@ def login_view(request):
                     # Optionally store role/permissions if needed frequently, but be mindful of session size
                     request.session["role"] = user.role.name
                     request.session["permissions"] = [
-                        {"P1": permission.P1, "P2": permission.P2}
+                        {"subject": permission.subject, "action": permission.action}
                         for permission in user.role.permissions.all()
                     ]
 
@@ -74,6 +79,8 @@ def login_view(request):
                             "message": "Login successful.",
                             "user_id": user.id,
                             "username": user.username,
+                            "role": role.id,
+                            "permissions": permission_ids,
                         },
                         status=200,
                     )
@@ -212,6 +219,11 @@ def role_permission(request):
         return unmap_role_permission(request)
     else:
         return JsonResponse({"message": "test GET"})
+
+
+def get_map_role_to_user(request):
+    print("get map role to user")
+    return map_role_to_permission(request)
 
 
 @ensure_csrf_cookie

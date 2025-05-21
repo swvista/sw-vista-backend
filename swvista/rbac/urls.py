@@ -11,6 +11,7 @@ urlpatterns = [
     path("role/", views.role, name="roles"),
     path("permission/", views.permission, name="permissions"),
     path("user_role/", views.user_role, name="user_role"),
+    path("map_role_to_user/", views.get_map_role_to_user, name="map_user_to_role"),
     path("role_permission/", views.role_permission, name="role_permission"),
     path(
         "get_user_role_by_user_id/<int:user_id>/",

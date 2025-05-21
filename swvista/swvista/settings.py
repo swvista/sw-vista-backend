@@ -25,7 +25,11 @@ SECRET_KEY = "django-insecure--#b9e&+1%m9%0tg%368p0=$yo*b(df^k%d=107at9ar7_z8f=2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "44e4-65-1-123-78.ngrok-free.app",
+]
 
 
 # Application definition
@@ -38,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "corsheaders",
     "rbac",
     "api",
 ]
@@ -50,6 +55,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "swvista.urls"
@@ -141,10 +147,14 @@ LOGIN_URL = "/api/v1/auth/login/"
 
 CSRF_USE_SESSIONS = False  # Default (uses cookies)
 CSRF_COOKIE_HTTPONLY = False  # Required for JS to read the cookie
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
 
 
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
+    "http://localhost:5173",
+    "https://44e4-65-1-123-78.ngrok-free.app",
 ]

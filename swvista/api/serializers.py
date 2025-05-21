@@ -2,6 +2,8 @@
 from rest_framework import serializers
 
 from .models.booking_approval import BookingApproval
+from .models.club import Club
+from .models.club_members import ClubMember
 from .models.proposal import Proposal
 from .models.venue import Venue
 from .models.venuebooking import VenueBooking
@@ -99,3 +101,15 @@ class VenueBookingSerializer(serializers.ModelSerializer):
                 {"proposal": "Proposal is required for event type 'event'."}
             )
         return attrs
+
+
+class ClubSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Club
+        fields = "__all__"
+
+
+class ClubMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClubMember
+        fields = "__all__"

@@ -2,10 +2,13 @@ import json
 
 from django.http import JsonResponse
 
+from ..decorators import check_user_permission, session_login_required
 from ..models import User, UserRole
 from ..serializers import UserRoleSerializer, UserSerializer
 
 
+@session_login_required
+@check_user_permission([{"subject": "user", "action": "create"}])
 def create_user(request):
     body = json.loads(request.body)
     serializer = UserSerializer(data=body)
@@ -15,6 +18,8 @@ def create_user(request):
     return JsonResponse(serializer.errors, status=400)
 
 
+@session_login_required
+@check_user_permission([{"subject": "user", "action": "read"}])
 def get_user(request):
 
     all_users = User.objects.all()
@@ -38,6 +43,8 @@ def get_user(request):
     return JsonResponse(all_users_data, safe=False, status=200)
 
 
+@session_login_required
+@check_user_permission([{"subject": "user", "action": "update"}])
 def update_user(request):
     body = json.loads(request.body)
     user = User.objects.get(id=body["id"])
@@ -62,6 +69,8 @@ def update_user(request):
     return JsonResponse(serializer.errors, status=400)
 
 
+@session_login_required
+@check_user_permission([{"subject": "user", "action": "delete"}])
 def delete_user(request):
     body = json.loads(request.body)
     user = User.objects.get(id=int(body["id"]))
@@ -73,6 +82,8 @@ def delete_user(request):
         return JsonResponse({"message": "User not found"}, status=404)
 
 
+@session_login_required
+@check_user_permission([{"subject": "user", "action": "write"}])
 def map_user_to_role(request):
     body = json.loads(request.body)
     print(body)
@@ -83,6 +94,8 @@ def map_user_to_role(request):
     return JsonResponse(serializer.errors, status=400)
 
 
+@session_login_required
+@check_user_permission([{"subject": "user", "action": "write"}])
 def unmap_user_role(request):
     body = json.loads(request.body)
     print(body)
