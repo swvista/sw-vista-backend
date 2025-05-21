@@ -2,15 +2,14 @@
 ````markdown
 # Project Name
 
-A web application built using Django. This project provides [brief 1-liner summary — e.g., a platform to manage student records / a blog with user login / a REST API for task management].
+SW-VISTA
 
 ## 🔧 Tech Stack
 
 - Python 3.x
 - Django 4.x
 - SQLite / PostgreSQL
-- HTML / CSS / Bootstrap (optional)
-- REST Framework (if applicable)
+- REST Framework 
 
 ---
 
@@ -18,8 +17,6 @@ A web application built using Django. This project provides [brief 1-liner summa
 
 - User authentication (sign up, login, logout)
 - [Add your features here]
-- Admin dashboard
-- RESTful API (optional)
 
 ---
 
@@ -27,8 +24,8 @@ A web application built using Django. This project provides [brief 1-liner summa
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/your-org-or-username/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/swvista/sw-vista-backend.git
+cd sw-vista-backend
 ````
 
 ### 2. Create and activate a virtual environment
