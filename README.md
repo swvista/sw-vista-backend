@@ -1,5 +1,3 @@
-Here’s a **professional README template** for a Django project on GitHub, designed to impress recruiters, collaborators, or potential users:
-
 ---
 
 ````markdown
