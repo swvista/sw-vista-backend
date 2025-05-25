@@ -147,9 +147,11 @@ LOGIN_URL = "/api/v1/auth/login/"
 
 CSRF_USE_SESSIONS = False  # Default (uses cookies)
 CSRF_COOKIE_HTTPONLY = False  # Required for JS to read the cookie
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:5173"]
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "None"  # Required for cross-site cookie sending
+SESSION_COOKIE_SAMESITE = "None"
 
 
 CORS_ALLOW_CREDENTIALS = True
