@@ -28,28 +28,39 @@ class RoleSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # Make password write-only
+
     password = serializers.CharField(
-        write_only=True, required=True, style={"input_type": "password"}
+        write_only=True, required=False, style={"input_type": "password"}
     )
 
     class Meta:
         model = User
-        # Add 'password' to fields used for input, but it won't be in output due to write_only=True
         fields = ["username", "email", "role", "password", "name", "registration_id"]
-        read_only_fields = ["id"]  # Make id read-only
+        read_only_fields = ["id"]
+
+    def validate_username(self, value):
+        user_id = self.instance.id if self.instance else None
+        if User.objects.exclude(id=user_id).filter(username=value).exists():
+            raise serializers.ValidationError("user with this username already exists.")
+        return value
+
+    def validate_registration_id(self, value):
+        user_id = self.instance.id if self.instance else None
+        if User.objects.exclude(id=user_id).filter(registration_id=value).exists():
+            raise serializers.ValidationError(
+                "user with this registration id already exists."
+            )
+        return value
 
     def create(self, validated_data):
-        # Hash password before creating user
         validated_data["password"] = make_password(validated_data.get("password"))
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
-        # Hash password if it is being updated
-        password = validated_data.pop("password", None)
-        if password:
-            instance.password = make_password(password)
-        # Update other fields as usual
+        if "password" in validated_data:
+            raise serializers.ValidationError(
+                {"password": "Password cannot be updated from this endpoint."}
+            )
         return super().update(instance, validated_data)
 
 
