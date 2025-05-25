@@ -1,0 +1,16 @@
+name: Enforce PR from Development
+
+on:
+  pull_request:
+    branches:
+      - preproduction
+
+jobs:
+  validate-pr-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Block PRs not from development
+        if: github.head_ref != 'development'
+        run: |
+          echo "❌ Only 'development' branch can raise pull requests to 'preproduction'."
+          exit 1
