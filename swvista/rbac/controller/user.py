@@ -4,18 +4,86 @@ from django.http import JsonResponse
 
 from ..decorators import check_user_permission, session_login_required
 from ..models import User, UserRole
-from ..serializers import UserRoleSerializer, UserSerializer
+from ..serializers import (
+    ClubMemberProfileSerializer,
+    FacultyAdvisorProfileSerializer,
+    SecurityHeadProfileSerializer,
+    StudentCouncilProfileSerializer,
+    StudentWelfareProfileSerializer,
+    UserRoleSerializer,
+    UserSerializer,
+)
 
 
 @session_login_required
 @check_user_permission([{"subject": "user", "action": "create"}])
 def create_user(request):
-    body = json.loads(request.body)
-    serializer = UserSerializer(data=body)
-    if serializer.is_valid():
-        serializer.save()
-        return JsonResponse(serializer.data, status=201)
-    return JsonResponse(serializer.errors, status=400)
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST method allowed."}, status=405)
+
+    try:
+        body = json.loads(request.body)
+        user_type = request.GET.get("type")
+
+        print("📥 Incoming user creation request")
+        print("🔍 Raw body:", json.dumps(body, indent=2))
+        print("🔍 user_type query param:", user_type)
+
+        # Validate user type
+        profile_serializer_map = {
+            "clubMember": ClubMemberProfileSerializer,
+            "studentCouncil": StudentCouncilProfileSerializer,
+            "facultyAdvisor": FacultyAdvisorProfileSerializer,
+            "studentWelfare": StudentWelfareProfileSerializer,
+            "securityHead": SecurityHeadProfileSerializer,
+        }
+
+        ProfileSerializer = profile_serializer_map.get(user_type)
+        if not ProfileSerializer:
+            print("❌ Invalid user type:", user_type)
+            return JsonResponse({"error": "Invalid user type"}, status=400)
+
+        # Create User
+        user_serializer = UserSerializer(data=body)
+        if not user_serializer.is_valid():
+            print("❌ User serializer errors:")
+            print(user_serializer.errors)
+            return JsonResponse(user_serializer.errors, status=400)
+
+        user = user_serializer.save()
+        print("✅ User created successfully:", user.username)
+
+        # Prepare and create Profile
+        profile_data = body.get("profile", {})
+        profile_data["user"] = user.id
+
+        print("🔧 Profile data prepared:", json.dumps(profile_data, indent=2))
+
+        profile_serializer = ProfileSerializer(data=profile_data)
+
+        if profile_serializer.is_valid():
+            profile_serializer.save()
+            print("✅ Profile created successfully for user:", user.username)
+            return JsonResponse(
+                {"user": user_serializer.data, "profile": profile_serializer.data},
+                status=201,
+            )
+
+        else:
+            print("❌ Profile serializer errors:")
+            print(profile_serializer.errors)
+            # Rollback user creation
+            user.delete()
+            print("🧹 Rolled back user due to profile failure.")
+            return JsonResponse(profile_serializer.errors, status=400)
+
+    except json.JSONDecodeError:
+        print("❌ Invalid JSON format")
+        return JsonResponse({"error": "Invalid JSON format."}, status=400)
+
+    except Exception as e:
+        print("🔥 Unexpected error occurred:", str(e))
+        return JsonResponse({"error": "Internal server error."}, status=500)
 
 
 @session_login_required

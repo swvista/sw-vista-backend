@@ -1,6 +1,7 @@
 from django.http import JsonResponse
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
+@ensure_csrf_cookie
 def index(request):
-    # api health checker  -> NOTE no auth required
-    return JsonResponse({"message": "HEALTH CHECK!!!"})
+    return JsonResponse({"message": "CSRF cookie set"})

@@ -1,7 +1,18 @@
 from django.contrib.auth.hashers import make_password  # Import hasher
 from rest_framework import serializers
 
-from .models import Permission, Role, RolePermission, User, UserRole
+from .models import (
+    ClubMemberProfile,
+    FacultyAdvisorProfile,
+    Permission,
+    Role,
+    RolePermission,
+    SecurityHeadProfile,
+    StudentCouncilProfile,
+    StudentWelfareProfile,
+    User,
+    UserRole,
+)
 
 
 class PermissionSerializer(serializers.ModelSerializer):
@@ -40,6 +51,37 @@ class UserSerializer(serializers.ModelSerializer):
             instance.password = make_password(password)
         # Update other fields as usual
         return super().update(instance, validated_data)
+
+
+# serializers.py
+class ClubMemberProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClubMemberProfile
+        fields = "__all__"
+
+
+class StudentCouncilProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentCouncilProfile
+        fields = "__all__"
+
+
+class FacultyAdvisorProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FacultyAdvisorProfile
+        fields = "__all__"
+
+
+class StudentWelfareProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentWelfareProfile
+        fields = "__all__"
+
+
+class SecurityHeadProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SecurityHeadProfile
+        fields = "__all__"
 
 
 class UserRoleSerializer(serializers.ModelSerializer):
