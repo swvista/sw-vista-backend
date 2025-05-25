@@ -1,0 +1,16 @@
+name: Enforce PR from Preproduction
+
+on:
+  pull_request:
+    branches:
+      - production
+
+jobs:
+  validate-pr-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if PR not from preproduction
+        if: github.head_ref != 'preproduction'
+        run: |
+          echo "❌ Pull requests to 'production' must come from 'preproduction'."
+          exit 1

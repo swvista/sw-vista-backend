@@ -68,6 +68,44 @@ class User(AbstractUser):
         return self.role.permissions.filter(name=permission_name).exists()
 
 
+# models.py
+
+
+class ClubMemberProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    learner_id = models.CharField(max_length=100)
+    reg_number = models.CharField(max_length=100)
+    post = models.CharField(max_length=100)
+    club_name = models.CharField(max_length=100)
+
+
+class StudentCouncilProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    learner_id = models.CharField(max_length=100)
+    reg_number = models.CharField(max_length=100)
+    post = models.CharField(max_length=100)
+
+
+class FacultyAdvisorProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    designation = models.CharField(max_length=100)
+    department = models.CharField(max_length=100)
+    emp_id = models.CharField(max_length=100)
+    club_name = models.CharField(max_length=100)
+
+
+class StudentWelfareProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    designation = models.CharField(max_length=100)
+    emp_id = models.CharField(max_length=100)
+
+
+class SecurityHeadProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    designation = models.CharField(max_length=100)
+    emp_id = models.CharField(max_length=100)
+
+
 class UserRole(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
