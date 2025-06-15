@@ -31,6 +31,8 @@ def check_user_permission(required_permissions):
         def _wrapped_view(request, *args, **kwargs):
             user_id = request.session.get("user_id")
             username = request.session.get("username")
+
+            print("username : ", username)
             if not user_id:
                 return JsonResponse({"error": "Authentication required."}, status=401)
 

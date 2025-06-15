@@ -54,9 +54,6 @@ class Role(models.Model):
 class User(AbstractUser):
     username = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
-    registration_id = models.CharField(
-        max_length=255, unique=True, null=True, blank=True
-    )
     password = models.CharField(max_length=255)
     email = models.EmailField(max_length=255)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
