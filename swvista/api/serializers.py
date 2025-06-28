@@ -1,12 +1,26 @@
 # serializers.py
+from rbac.models import User  # Import User model from rbac
 from rest_framework import serializers
 
+from .models.amenity import Amenity
+
+# Import models from their specific files
 from .models.booking_approval import BookingApproval
 from .models.club import Club
 from .models.club_members import ClubMember
 from .models.proposal import Proposal
 from .models.venue import Venue
+from .models.VenueAmenities import VenueAmenities
 from .models.venuebooking import VenueBooking
+
+# Rest of your serializers remain the same...
+
+
+# Define UserSerializer for nested representation
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "name", "email"]
 
 
 class VenueSerializer(serializers.ModelSerializer):
@@ -23,25 +37,12 @@ class ProposalSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "requested_date",
+            "duration_in_minutes",
+            "attendees",
             "status",
             "created_at",
             "updated_at",
         ]
-
-
-# class VenueBookingSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = VenueBooking
-#         fields = "__all__"
-
-#     def validate(self, attrs):
-#         event_type = attrs.get("event_type")
-#         proposal = attrs.get("proposal")
-#         if event_type == 2 and proposal is None:
-#             raise serializers.ValidationError(
-#                 {"proposal": "Proposal is required for event type 'event'."}
-#             )
-#         return attrs
 
 
 class BookingApprovalSerializer(serializers.ModelSerializer):
@@ -63,13 +64,19 @@ class BookingApprovalSerializer(serializers.ModelSerializer):
 
 
 class VenueBookingSerializer(serializers.ModelSerializer):
+    # Existing fields
     approvals = BookingApprovalSerializer(many=True, read_only=True)
     venue_name = serializers.ReadOnlyField(source="venue.name")
-    requester_name = serializers.ReadOnlyField(
-        source="requester.username"
-    )  # Fixed source path
+    requester_name = serializers.ReadOnlyField(source="requester.username")
     status_display = serializers.ReadOnlyField(source="get_status_display")
     event_type_display = serializers.ReadOnlyField(source="get_event_type_display")
+
+    # New nested representations (read-only)
+    venue_details = VenueSerializer(source="venue", read_only=True)
+    proposal_details = ProposalSerializer(
+        source="proposal", read_only=True, allow_null=True
+    )
+    requester_details = UserSerializer(source="requester", read_only=True)
 
     class Meta:
         model = VenueBooking
@@ -77,11 +84,14 @@ class VenueBookingSerializer(serializers.ModelSerializer):
             "id",
             "venue",
             "venue_name",
+            "venue_details",  # New field
             "proposal",
+            "proposal_details",  # New field
             "event_type",
             "event_type_display",
             "requester",
             "requester_name",
+            "requester_details",  # New field
             "approval_stage",
             "status",
             "status_display",
@@ -113,3 +123,18 @@ class ClubMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClubMember
         fields = "__all__"
+
+
+class AmenitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Amenity
+        fields = "__all__"
+
+
+class VenueAmenitiesSerializer(serializers.ModelSerializer):
+    amenity = AmenitySerializer(read_only=True)
+    venue = VenueSerializer(read_only=True)
+
+    class Meta:
+        model = VenueAmenities
+        fields = ["id", "venue", "amenity", "created_at", "updated_at"]

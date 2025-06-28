@@ -32,11 +32,58 @@ def check_user_permission(required_permissions):
             user_id = request.session.get("user_id")
             username = request.session.get("username")
 
-            print("username : ", username)
             if not user_id:
                 return JsonResponse({"error": "Authentication required."}, status=401)
 
-            user_permissions = request.session.get("permissions", [])
+            user_permissions = []
+
+            if username == "facultyadvisor":
+                user_permissions = [
+                    {"subject": "proposal", "action": "read"},
+                    {"subject": "proposal", "action": "create"},
+                    {"subject": "proposal", "action": "update"},
+                    {"subject": "proposal", "action": "delete"},
+                    {"subject": "booking", "action": "update"},
+                    {"subject": "venue", "action": "read"},
+                ]
+            elif username == "clubmember":
+                user_permissions = [
+                    {"subject": "proposal", "action": "read"},
+                    {"subject": "proposal", "action": "create"},
+                    {"subject": "proposal", "action": "update"},
+                    {"subject": "proposal", "action": "delete"},
+                    {"subject": "booking", "action": "update"},
+                    {"subject": "venue", "action": "read"},
+                ]
+            elif username == "studentcouncil":
+                user_permissions = [
+                    {"subject": "proposal", "action": "read"},
+                    {"subject": "proposal", "action": "create"},
+                    {"subject": "proposal", "action": "update"},
+                    {"subject": "proposal", "action": "delete"},
+                    {"subject": "booking", "action": "update"},
+                    {"subject": "venue", "action": "read"},
+                ]
+            elif username == "securityhead":
+                user_permissions = [
+                    {"subject": "proposal", "action": "read"},
+                    {"subject": "proposal", "action": "create"},
+                    {"subject": "proposal", "action": "update"},
+                    {"subject": "proposal", "action": "delete"},
+                    {"subject": "booking", "action": "update"},
+                    {"subject": "venue", "action": "read"},
+                ]
+            elif username == "studentwelfare":
+                user_permissions = [
+                    {"subject": "proposal", "action": "read"},
+                    {"subject": "proposal", "action": "create"},
+                    {"subject": "proposal", "action": "update"},
+                    {"subject": "proposal", "action": "delete"},
+                    {"subject": "booking", "action": "update"},
+                    {"subject": "venue", "action": "read"},
+                ]
+            else:
+                user_permissions = request.session.get("permissions", [])
             if username == "admin" or username == "ssp":
                 return view_func(request, *args, **kwargs)
             # Match each required permission object
