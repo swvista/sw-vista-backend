@@ -132,6 +132,9 @@ def update_user(request):
     try:
         body = json.loads(request.body)
         user_type = request.GET.get("type")
+
+        user_id = body.get("id")
+
         username = body.get("username")
 
         if not username:

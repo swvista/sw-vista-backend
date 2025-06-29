@@ -11,9 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security Settings
 SECRET_KEY = "django-insecure--#b9e&+1%m9%0tg%368p0=$yo*b(df^k%d=107at9ar7_z8f=2"
 DEBUG = True
-
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "13.60.34.178"]
-
 
 # Application Definition
 INSTALLED_APPS = [
@@ -109,17 +107,14 @@ CORS_ALLOW_METHODS = [
 CORS_PREFLIGHT_MAX_AGE = 86400
 
 # Session & CSRF Cookies
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.1:5173",
-    "https://swvista.fly.dev",
-]
+CSRF_TRUSTED_ORIGINS = ["http://13.60.34.178", "http://localhost", "http://127.0.0.1"]
+
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = "None"
-CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = False
 
 # URL Configuration
 LOGIN_URL = "/api/v1/auth/login/"
