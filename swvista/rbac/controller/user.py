@@ -137,7 +137,6 @@ def update_user(request):
 
         username = body.get("username")
 
-
         if not username:
             return JsonResponse({"error": "User ID is required."}, status=400)
 
