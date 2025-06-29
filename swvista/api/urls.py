@@ -58,6 +58,11 @@ urlpatterns = [
     # Club API
     path("club/create/", views.create_club_view, name="create_club"),
     path("club/get-all/", views.get_all_clubs_view, name="get_all_clubs"),
+    path(
+        "club/get-all-club-details/",
+        views.get_all_club_details_view,
+        name="get_all_clubs_details",
+    ),
     path("club/get-by-id/<int:id>/", views.get_club_by_id_view, name="get_club_by_id"),
     path("club/update/<int:id>/", views.update_club_view, name="update_club"),
     path("club/delete/<int:id>/", views.delete_club_view, name="delete_club"),
@@ -77,4 +82,30 @@ urlpatterns = [
         name="get_all_members_of_club",
     ),
     path("club/get-my-clubs/", views.get_my_clubs_view, name="get_my_clubs"),
+    path("amenity/get-all/", views.get_all_amenity_view, name="get-all-amenity"),
+    path("amenity/create/", views.create_amenity, name="create_amenity"),
+    path(
+        "amenity/get-by-id/<int:id>/", views.get_amenity_by_id, name="get_amenity_by_id"
+    ),
+    path(
+        "amenity/update-by-id/<int:id>/",
+        views.update_amenity_view,
+        name="update_amenity",
+    ),
+    path(
+        "amenity/delete-by-id/<int:id>/",
+        views.delete_amenity_view,
+        name="delete_amenity",
+    ),
+    path(
+        "venueamenities/add/<int:venue_id>/",
+        views.add_venue_amenity_view,
+        name="add_venue_amenity",
+    ),
+    path(
+        "venueamenities/get-by-id/<int:venue_id>/",
+        views.get_amenities_of_a_venue_by_id_view,
+        name="get_amenities_of_a_venue_by_id",
+    ),
+    path("reports/", views.create_report, name="create_report"),
 ]

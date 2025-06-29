@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  swvista-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: swvista-web
+    command: /app/entrypoint.prod.sh
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - swvista-db
+
+  swvista-db:
+    image: postgres:15
+    container_name: swvista-db
+    environment:
+      POSTGRES_DB: swvista
+      POSTGRES_USER: swvista_user
+      POSTGRES_PASSWORD: swvista_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

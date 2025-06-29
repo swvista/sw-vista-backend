@@ -2,6 +2,7 @@
 Django settings for swvista project.
 """
 
+import os
 from pathlib import Path
 
 # Build paths
@@ -10,11 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security Settings
 SECRET_KEY = "django-insecure--#b9e&+1%m9%0tg%368p0=$yo*b(df^k%d=107at9ar7_z8f=2"
 DEBUG = True
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "5761-65-1-123-78.ngrok-free.app",
-]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "13.60.34.178"]
 
 # Application Definition
 INSTALLED_APPS = [
@@ -31,6 +28,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -47,10 +45,15 @@ WSGI_APPLICATION = "swvista.wsgi.application"
 # Database
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB", "swvista"),
+        "USER": os.getenv("POSTGRES_USER", "swvista_user"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "swvista_pass"),
+        "HOST": "swvista-db",
+        "PORT": "5432",
     }
 }
+
 
 # Authentication
 AUTH_USER_MODEL = "rbac.User"
@@ -71,12 +74,15 @@ USE_TZ = True
 
 # Static Files
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Security & CORS Configuration
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://5761-65-1-123-78.ngrok-free.app",
+    "http://127.0.0.1:5173",
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
@@ -101,16 +107,14 @@ CORS_ALLOW_METHODS = [
 CORS_PREFLIGHT_MAX_AGE = 86400
 
 # Session & CSRF Cookies
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    "https://5761-65-1-123-78.ngrok-free.app",
-]
+CSRF_TRUSTED_ORIGINS = ["http://13.60.34.178", "http://localhost", "http://127.0.0.1"]
+
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = "None"
-CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = False
 
 # URL Configuration
 LOGIN_URL = "/api/v1/auth/login/"

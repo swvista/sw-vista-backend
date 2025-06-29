@@ -3,11 +3,15 @@ venv/
 *.venv/
 *venv/
 
+staticfiles/
+
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+*.pem
 
 __pycache__/
 *.pyc

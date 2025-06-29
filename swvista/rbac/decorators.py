@@ -24,6 +24,7 @@ def check_user_permission(required_permissions):
     """
     Decorator to check for complex permission objects like:
     [{'subject': 'venue', 'action': 'read'}]
+    Supports: {'subject': 'all', 'action': 'all'} for admin override.
     """
 
     def decorator(view_func):
@@ -32,14 +33,66 @@ def check_user_permission(required_permissions):
             user_id = request.session.get("user_id")
             username = request.session.get("username")
 
-            print("username : ", username)
             if not user_id:
                 return JsonResponse({"error": "Authentication required."}, status=401)
 
-            user_permissions = request.session.get("permissions", [])
-            if username == "admin" or username == "ssp":
+            # Static role-based permissions
+            user_permissions = []
+
+            if username == "facultyadvisor":
+                user_permissions = [
+                    {"subject": "proposal", "action": "read"},
+                    {"subject": "proposal", "action": "create"},
+                    {"subject": "proposal", "action": "update"},
+                    {"subject": "proposal", "action": "delete"},
+                    {"subject": "booking", "action": "update"},
+                    {"subject": "venue", "action": "read"},
+                ]
+            elif username == "clubmember":
+                user_permissions = [
+                    {"subject": "proposal", "action": "read"},
+                    {"subject": "proposal", "action": "create"},
+                    {"subject": "proposal", "action": "update"},
+                    {"subject": "proposal", "action": "delete"},
+                    {"subject": "booking", "action": "update"},
+                    {"subject": "venue", "action": "read"},
+                ]
+            elif username == "studentcouncil":
+                user_permissions = [
+                    {"subject": "proposal", "action": "read"},
+                    {"subject": "proposal", "action": "create"},
+                    {"subject": "proposal", "action": "update"},
+                    {"subject": "proposal", "action": "delete"},
+                    {"subject": "booking", "action": "update"},
+                    {"subject": "venue", "action": "read"},
+                ]
+            elif username == "securityhead":
+                user_permissions = [
+                    {"subject": "proposal", "action": "read"},
+                    {"subject": "proposal", "action": "create"},
+                    {"subject": "proposal", "action": "update"},
+                    {"subject": "proposal", "action": "delete"},
+                    {"subject": "booking", "action": "update"},
+                    {"subject": "venue", "action": "read"},
+                ]
+            elif username == "studentwelfare":
+                user_permissions = [
+                    {"subject": "proposal", "action": "read"},
+                    {"subject": "proposal", "action": "create"},
+                    {"subject": "proposal", "action": "update"},
+                    {"subject": "proposal", "action": "delete"},
+                    {"subject": "booking", "action": "update"},
+                    {"subject": "venue", "action": "read"},
+                ]
+            else:
+                user_permissions = request.session.get("permissions", [])
+
+            # Bypass if user has global permission
+
+            if {"subject": "all", "action": "all"} in user_permissions:
                 return view_func(request, *args, **kwargs)
-            # Match each required permission object
+
+            # Check if all required permissions are present
             for required in required_permissions:
                 if required not in user_permissions:
                     return JsonResponse(

@@ -1,0 +1,37 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+# Environment
+.env
+*.env
+.env*
+
+# Logs
+*.log
+
+# Media & Static (if mounted from host, but keep if collecting in Docker)
+media/
+static/
+staticfiles/
+
+# OS and Editor junk
+.DS_Store
+.vscode/
+.idea/
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+entrypoint.sh
