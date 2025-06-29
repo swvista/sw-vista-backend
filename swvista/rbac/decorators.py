@@ -24,6 +24,7 @@ def check_user_permission(required_permissions):
     """
     Decorator to check for complex permission objects like:
     [{'subject': 'venue', 'action': 'read'}]
+    Supports: {'subject': 'all', 'action': 'all'} for admin override.
     """
 
     def decorator(view_func):
@@ -35,6 +36,7 @@ def check_user_permission(required_permissions):
             if not user_id:
                 return JsonResponse({"error": "Authentication required."}, status=401)
 
+            # Static role-based permissions
             user_permissions = []
 
             if username == "facultyadvisor":
@@ -84,9 +86,14 @@ def check_user_permission(required_permissions):
                 ]
             else:
                 user_permissions = request.session.get("permissions", [])
-            if username == "admin" or username == "ssp":
+
+
+            # Bypass if user has global permission
+
+            if {"subject": "all", "action": "all"} in user_permissions:
                 return view_func(request, *args, **kwargs)
-            # Match each required permission object
+
+            # Check if all required permissions are present
             for required in required_permissions:
                 if required not in user_permissions:
                     return JsonResponse(

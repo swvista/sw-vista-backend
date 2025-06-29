@@ -22,8 +22,7 @@ from ..serializers import (
 )
 
 
-@session_login_required
-@check_user_permission([{"subject": "user", "action": "create"}])
+# @check_user_permission([{"subject": "user", "action": "create"}])
 def create_user(request):
     if request.method != "POST":
         return JsonResponse({"error": "Only POST method allowed."}, status=405)
@@ -80,8 +79,7 @@ def create_user(request):
         return JsonResponse({"error": "Internal server error."}, status=500)
 
 
-@session_login_required
-@check_user_permission([{"subject": "user", "action": "read"}])
+# @check_user_permission([{"subject": "user", "action": "read"}])
 def get_user(request):
     all_users = User.objects.all()
     all_users_data = []
@@ -125,7 +123,7 @@ def get_user(request):
     return JsonResponse(all_users_data, safe=False, status=200)
 
 
-@session_login_required
+# @session_login_required
 @check_user_permission([{"subject": "user", "action": "update"}])
 def update_user(request):
     if request.method != "PUT":
@@ -208,8 +206,7 @@ def update_user(request):
         return JsonResponse({"error": "Internal server error."}, status=500)
 
 
-@session_login_required
-@check_user_permission([{"subject": "user", "action": "delete"}])
+# @check_user_permission([{"subject": "user", "action": "delete"}])
 def delete_user(request):
     try:
         body = json.loads(request.body)
@@ -258,8 +255,7 @@ def delete_user(request):
         return JsonResponse({"error": "Internal server error."}, status=500)
 
 
-@session_login_required
-@check_user_permission([{"subject": "user", "action": "write"}])
+# @check_user_permission([{"subject": "user", "action": "write"}])
 def map_user_to_role(request):
     body = json.loads(request.body)
     print(body)
@@ -270,8 +266,7 @@ def map_user_to_role(request):
     return JsonResponse(serializer.errors, status=400)
 
 
-@session_login_required
-@check_user_permission([{"subject": "user", "action": "write"}])
+# @check_user_permission([{"subject": "user", "action": "write"}])
 def unmap_user_role(request):
     # body = json.loads(request.body)
     # user_role = UserRole.objects.get(id=body["id"])

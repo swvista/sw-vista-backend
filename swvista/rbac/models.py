@@ -22,6 +22,7 @@ class Permission(models.Model):
         ("role", "role"),
         ("permission", "permission"),
         ("audit_log", "audit_log"),
+        ("all", "all"),  # Special case for all permissions
     )
     ACTION_CHOICES = (
         ("create", "create"),  # POST
@@ -29,6 +30,7 @@ class Permission(models.Model):
         ("write", "write"),  # PUT, PATCH
         ("delete", "delete"),  # DELETE
         ("update", "update"),  # UPDATE
+        ("all", "all"),  # Special case for all actions
     )
     id = models.AutoField(primary_key=True)
     action = models.CharField(

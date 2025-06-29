@@ -7,8 +7,7 @@ from ..models import Role, RolePermission
 from ..serializers import RolePermissionSerializer, RoleSerializer
 
 
-@session_login_required
-@check_user_permission([{"subject": "role", "action": "create"}])
+# @check_user_permission([{"subject": "role", "action": "create"}])
 def create_role(request):
     body = json.loads(request.body)
     serializer = RoleSerializer(data=body)
@@ -31,8 +30,7 @@ def create_role(request):
     return JsonResponse(serializer.errors, status=400)
 
 
-@session_login_required
-@check_user_permission([{"subject": "role", "action": "read"}])
+# @check_user_permission([{"subject": "role", "action": "read"}])
 def get_role(request):
     roles = Role.objects.all()
     all_roles_data = []
@@ -51,8 +49,7 @@ def get_role(request):
     return JsonResponse(all_roles_data, safe=False, status=200)
 
 
-@session_login_required
-@check_user_permission([{"subject": "role", "action": "update"}])
+# @check_user_permission([{"subject": "role", "action": "update"}])
 def update_role(request):
     body = json.loads(request.body)
     role = Role.objects.get(id=body["id"])
@@ -79,8 +76,7 @@ def update_role(request):
         return JsonResponse({"message": "Role not found"}, status=404)
 
 
-@session_login_required
-@check_user_permission([{"subject": "role", "action": "delete"}])
+# @check_user_permission([{"subject": "role", "action": "delete"}])
 def delete_role(request):
     body = json.loads(request.body)
     role = Role.objects.get(id=body["id"])
@@ -111,8 +107,7 @@ def delete_role(request):
         return JsonResponse({"message": "Role not found"}, status=404)
 
 
-@session_login_required
-@check_user_permission([{"subject": "role", "action": "read"}])
+# @check_user_permission([{"subject": "role", "action": "read"}])
 def get_role_permission(request):
     body = json.loads(request.body)
     role = Role.objects.get(id=body["id"])
@@ -123,8 +118,7 @@ def get_role_permission(request):
         return JsonResponse({"message": "Role not found"}, status=404)
 
 
-@session_login_required
-@check_user_permission([{"subject": "role", "action": "write"}])
+# @check_user_permission([{"subject": "role", "action": "write"}])
 def unmap_role_permission(request):
     body = json.loads(request.body)
     print(body)
@@ -133,8 +127,7 @@ def unmap_role_permission(request):
     return JsonResponse({"message": "Role permission deleted successfully"}, status=200)
 
 
-@session_login_required
-@check_user_permission([{"subject": "role", "action": "write"}])
+# @check_user_permission([{"subject": "role", "action": "write"}])
 def map_role_to_permission(request):
     body = json.loads(request.body)
     print(body)
