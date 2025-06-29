@@ -2,8 +2,8 @@
 Django settings for swvista project.
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -47,13 +47,13 @@ WSGI_APPLICATION = "swvista.wsgi.application"
 
 # Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'swvista'),
-        'USER': os.getenv('POSTGRES_USER', 'swvista_user'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'swvista_pass'),
-        'HOST': 'swvista-db',
-        'PORT': '5432',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB", "swvista"),
+        "USER": os.getenv("POSTGRES_USER", "swvista_user"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "swvista_pass"),
+        "HOST": "swvista-db",
+        "PORT": "5432",
     }
 }
 

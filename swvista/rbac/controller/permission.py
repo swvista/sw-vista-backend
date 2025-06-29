@@ -7,7 +7,6 @@ from ..models import Permission
 from ..serializers import PermissionSerializer
 
 
-
 # @check_user_permission([{"subject": "permission", "action": "create"}])
 def create_permission(request):
     body = json.loads(request.body)

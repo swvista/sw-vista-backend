@@ -4,6 +4,9 @@ from django.contrib.auth.hashers import check_password
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
+# --- Authentication Views ---
+from rest_framework.response import Response
+
 from .controller.permission import (
     create_permission,
     delete_permission,
@@ -35,8 +38,6 @@ from .serializers import UserRoleSerializer
 
 # Create your views here.
 
-# --- Authentication Views ---
-from rest_framework.response import Response
 
 
 def create_superuser_api(request):
@@ -53,10 +54,16 @@ def create_superuser_api(request):
         if User.objects.filter(username=username).exists():
             return JsonResponse({"error": "User already exists"}, status=400)
 
-        role, _ = Role.objects.get_or_create(name=role_name, defaults={"description": "Auto created role"})
-        user = User.objects.create_superuser(username=username, email=email, password=password, role=role)
+        role, _ = Role.objects.get_or_create(
+            name=role_name, defaults={"description": "Auto created role"}
+        )
+        user = User.objects.create_superuser(
+            username=username, email=email, password=password, role=role
+        )
 
-        return JsonResponse({"message": "Superuser created", "username": user.username}, status=201)
+        return JsonResponse(
+            {"message": "Superuser created", "username": user.username}, status=201
+        )
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)

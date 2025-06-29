@@ -87,7 +87,6 @@ def check_user_permission(required_permissions):
             else:
                 user_permissions = request.session.get("permissions", [])
 
-
             # Bypass if user has global permission
 
             if {"subject": "all", "action": "all"} in user_permissions:
