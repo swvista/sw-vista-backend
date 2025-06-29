@@ -9,11 +9,10 @@ from .models.booking_approval import BookingApproval
 from .models.club import Club
 from .models.club_members import ClubMember
 from .models.proposal import Proposal
+from .models.Report import Report
 from .models.venue import Venue
 from .models.VenueAmenities import VenueAmenities
 from .models.venuebooking import VenueBooking
-
-# Rest of your serializers remain the same...
 
 
 # Define UserSerializer for nested representation
@@ -138,3 +137,10 @@ class VenueAmenitiesSerializer(serializers.ModelSerializer):
     class Meta:
         model = VenueAmenities
         fields = ["id", "venue", "amenity", "created_at", "updated_at"]
+
+
+class ReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Report
+        fields = "__all__"
+        read_only_fields = ["submitted_by", "submitted_at"]

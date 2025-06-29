@@ -31,6 +31,7 @@ from .controller.proposal import (
     get_proposal_by_id,
     update_proposal,
 )
+from .controller.report import create_report
 from .controller.venue import (
     create_venue,
     delete_venue,
@@ -194,3 +195,7 @@ def add_venue_amenity_view(request, venue_id):
 
 def get_amenities_of_a_venue_by_id_view(request, venue_id):
     return list_venue_amenities(request, venue_id)
+
+
+def create_report_view(request):
+    return create_report(request)

@@ -188,7 +188,9 @@ def add_member_to_club(request, id):
     Returns 404 if club or specified user not found.
     Returns 400 if user is already a member or data is invalid.
     """
+
     club = get_object_or_404(Club, id=id)
+    print(f"Club found: {club.name} (ID: {club.id})")
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:

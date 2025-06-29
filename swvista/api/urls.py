@@ -107,4 +107,5 @@ urlpatterns = [
         views.get_amenities_of_a_venue_by_id_view,
         name="get_amenities_of_a_venue_by_id",
     ),
+    path("reports/", views.create_report, name="create_report"),
 ]
