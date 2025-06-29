@@ -4,18 +4,40 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
-from rbac.constants import roles
-from rbac.decorators import session_login_required
+from rbac.decorators import check_user_permission, session_login_required
 
-from ..decorators import check_user_permission
 from ..models.booking_approval import BookingApproval
 from ..models.venuebooking import VenueBooking
 from ..serializers import BookingApprovalSerializer, VenueBookingSerializer
 
+# Map stages to required roles
+STAGE_ROLES = {
+    0: "facultyadvisor",  # Stage 0: Faculty Advisor
+    1: "studentcouncil",  # Stage 1: Student Council
+    2: "studentwelfare",  # Stage 2: Student Welfare
+    3: "securityhead",  # Stage 3: Security Head
+}
+
+
+def check_stage_permission(request, booking):
+    """Check if user has permission to approve at current stage"""
+    user_role = request.session.get("username")
+    required_role = STAGE_ROLES.get(booking.approval_stage)
+
+    if not required_role:
+        return JsonResponse({"error": "Invalid approval stage"}, status=400)
+
+    if user_role != required_role:
+        return JsonResponse(
+            {"error": f"Only {required_role} can approve at this stage"}, status=403
+        )
+
+    return None
+
 
 @ensure_csrf_cookie
 @session_login_required
-@check_user_permission(roles["admin"], "venue", "approve")
+@check_user_permission([{"subject": "proposal", "action": "read"}])
 def approve_booking(request, booking_id):
     """Approve a booking at the current stage"""
     if request.method == "POST":
@@ -31,6 +53,10 @@ def approve_booking(request, booking_id):
                         },
                         status=400,
                     )
+                # Check stage permission
+                permission_error = check_stage_permission(request, booking)
+                if permission_error:
+                    return permission_error
 
                 # Get comments from request
                 data = json.loads(request.body)
@@ -80,7 +106,7 @@ def approve_booking(request, booking_id):
 
 @ensure_csrf_cookie
 @session_login_required
-@check_user_permission(roles["admin"], "venue", "reject")
+@check_user_permission([{"subject": "proposal", "action": "read"}])
 def reject_booking(request, booking_id):
     """Reject a booking at any stage"""
     if request.method == "POST":
@@ -142,6 +168,7 @@ def reject_booking(request, booking_id):
 
 @ensure_csrf_cookie
 @session_login_required
+@check_user_permission([{"subject": "proposal", "action": "read"}])
 def get_pending_approvals(request):
     """Get list of bookings pending approval for the current user"""
     if request.method == "GET":
@@ -161,6 +188,7 @@ def get_pending_approvals(request):
 
 @ensure_csrf_cookie
 @session_login_required
+@check_user_permission([{"subject": "proposal", "action": "read"}])
 def get_approval_history(request, booking_id):
     """Get the full approval history for a booking"""
     if request.method == "GET":

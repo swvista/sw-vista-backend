@@ -4,4 +4,5 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 
 @ensure_csrf_cookie
 def index(request):
+    print(request)
     return JsonResponse({"message": "CSRF cookie set"})

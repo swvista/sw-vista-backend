@@ -3,20 +3,25 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
-from rbac.constants import roles
-from rbac.decorators import session_login_required
+from rbac.decorators import check_user_permission, session_login_required
 
-from ..decorators import check_user_permission
 from ..models.venuebooking import VenueBooking
 from ..serializers import VenueBookingSerializer
 
 
 @ensure_csrf_cookie
 @session_login_required
+@check_user_permission([{"subject": "proposal", "action": "read"}])
 def get_all_bookings(request):
-    """Retrieve all venue bookings"""
+    """Retrieve all venue bookings with detailed related data"""
     if request.method == "GET":
-        bookings = VenueBooking.objects.all()
+        # Optimized query with related data fetching
+        bookings = (
+            VenueBooking.objects.select_related("venue", "proposal", "requester")
+            .prefetch_related("approvals")
+            .all()
+        )
+
         serializer = VenueBookingSerializer(bookings, many=True)
         return JsonResponse(serializer.data, safe=False)
     return JsonResponse({"error": "Only GET method is allowed."}, status=405)
@@ -24,6 +29,7 @@ def get_all_bookings(request):
 
 @ensure_csrf_cookie
 @session_login_required
+@check_user_permission([{"subject": "proposal", "action": "read"}])
 def get_booking_by_id(request, booking_id):
     """Retrieve a specific booking by ID"""
     if request.method == "GET":
@@ -35,7 +41,7 @@ def get_booking_by_id(request, booking_id):
 
 @ensure_csrf_cookie
 @session_login_required
-@check_user_permission(roles["admin"], "venue", "write")
+@check_user_permission([{"subject": "proposal", "action": "read"}])
 def create_booking(request):
     """Create a new venue booking"""
     if request.method == "POST":
@@ -58,7 +64,7 @@ def create_booking(request):
 
 @ensure_csrf_cookie
 @session_login_required
-@check_user_permission(roles["admin"], "venue", "write")
+@check_user_permission([{"subject": "proposal", "action": "read"}])
 def update_booking(request, booking_id):
     """Update an existing venue booking"""
     if request.method == "PUT":
@@ -99,7 +105,7 @@ def update_booking(request, booking_id):
 
 @ensure_csrf_cookie
 @session_login_required
-@check_user_permission(roles["admin"], "venue", "delete")
+@check_user_permission([{"subject": "proposal", "action": "read"}])
 def delete_booking(request, booking_id):
     """Delete a venue booking"""
     if request.method == "DELETE":

@@ -67,6 +67,50 @@ def get_all_clubs(request):
 
 @require_http_methods(["GET"])
 @ensure_csrf_cookie
+def get_all_clubs_details(request):
+    """
+    Retrieves detailed information about all clubs, including member lists.
+    Requires appropriate read permissions.
+    Returns a list of clubs with their member details.
+    """
+    clubs = Club.objects.all()
+    club_details = []
+
+    for club in clubs:
+        # Get all club members with related user data
+        members = ClubMember.objects.filter(club=club).select_related("user")
+
+        # Serialize member data
+        member_data = []
+        for member in members:
+            member_data.append(
+                {
+                    "id": member.user.id,
+                    "username": member.user.username,
+                    "name": member.user.name,
+                    "email": member.user.email,
+                }
+            )
+
+        # Prepare club data
+        club_details.append(
+            {
+                "id": club.id,
+                "name": club.name,
+                "description": club.description,
+                "image": club.image.url if club.image else None,
+                "member_count": members.count(),
+                "members": member_data,
+                "created_at": club.created_at,
+                "updated_at": club.updated_at,
+            }
+        )
+
+    return JsonResponse(club_details, safe=False, status=200)
+
+
+@require_http_methods(["GET"])
+@ensure_csrf_cookie
 # Example permission: @check_user_permission([roles["admin"], roles["user"]], "club", "read")
 def get_club_by_id(request, id):
     """
@@ -144,7 +188,9 @@ def add_member_to_club(request, id):
     Returns 404 if club or specified user not found.
     Returns 400 if user is already a member or data is invalid.
     """
+
     club = get_object_or_404(Club, id=id)
+    print(f"Club found: {club.name} (ID: {club.id})")
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:

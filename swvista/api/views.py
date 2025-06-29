@@ -1,3 +1,10 @@
+from .controller.amenity import (
+    create_amenity,
+    delete_amenity,
+    get_amenity,
+    list_amenities,
+    update_amenity,
+)
 from .controller.booking_approvals import (
     approve_booking,
     get_approval_history,
@@ -9,6 +16,7 @@ from .controller.club import (
     create_club,
     delete_club,
     get_all_clubs,
+    get_all_clubs_details,
     get_all_members_of_club,
     get_club_by_id,
     get_my_clubs,
@@ -23,6 +31,7 @@ from .controller.proposal import (
     get_proposal_by_id,
     update_proposal,
 )
+from .controller.report import create_report
 from .controller.venue import (
     create_venue,
     delete_venue,
@@ -30,6 +39,7 @@ from .controller.venue import (
     get_venue_by_id,
     update_venue,
 )
+from .controller.venue_amenities import add_venue_amenity, list_venue_amenities
 from .controller.venue_booking import (
     create_booking,
     get_all_bookings,
@@ -127,6 +137,10 @@ def get_all_clubs_view(request):
     return get_all_clubs(request)
 
 
+def get_all_club_details_view(request):
+    return get_all_clubs_details(request)
+
+
 def get_club_by_id_view(request, id):
     return get_club_by_id(request, id)
 
@@ -153,3 +167,35 @@ def get_all_members_of_club_view(request, id):
 
 def get_my_clubs_view(request):
     return get_my_clubs(request)
+
+
+def create_amenity_view(request):
+    return create_amenity(request)
+
+
+def get_all_amenity_view(request):
+    return list_amenities(request)
+
+
+def get_amenity_by_id(request, id):
+    return get_amenity(request, id)
+
+
+def update_amenity_view(request, id):
+    return update_amenity(request, id)
+
+
+def delete_amenity_view(request, id):
+    return delete_amenity(request, id)
+
+
+def add_venue_amenity_view(request, venue_id):
+    return add_venue_amenity(request, venue_id)
+
+
+def get_amenities_of_a_venue_by_id_view(request, venue_id):
+    return list_venue_amenities(request, venue_id)
+
+
+def create_report_view(request):
+    return create_report(request)

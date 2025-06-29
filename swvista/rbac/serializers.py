@@ -35,7 +35,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["username", "email", "role", "password", "name", "registration_id"]
+        fields = ["username", "email", "role", "password", "name"]
         read_only_fields = ["id"]
 
     def validate_username(self, value):

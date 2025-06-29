@@ -33,6 +33,7 @@ def get_all_venues(request):
     # page_obj = paginator.get_page(page_number)
     # serializer = VenueSerializer(page_obj, many=True)
     serializer = VenueSerializer(venues, many=True)
+
     # safe=False is required because the top-level object is a list
     return JsonResponse(serializer.data, safe=False)
 
