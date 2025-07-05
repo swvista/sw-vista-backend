@@ -16,6 +16,7 @@ class ClubMember(models.Model):
 
     class Meta:
         unique_together = ("club", "user")
+        db_table = "club_member"
 
     def __str__(self):
         return f"{self.user.username} - {self.club.name}"

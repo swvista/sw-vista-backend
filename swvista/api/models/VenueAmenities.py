@@ -43,3 +43,6 @@ class VenueAmenities(models.Model):
 
     def __str__(self):
         return f"{self.venue.name} – {self.amenity.name}"
+
+    class Meta:
+        db_table = "venue_amenities"

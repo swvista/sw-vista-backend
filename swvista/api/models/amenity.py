@@ -32,5 +32,8 @@ class Amenity(models.Model):
 
     objects = AmenityManager()  # 🎯 Attach the custom manager
 
+    class Meta:
+        db_table = "amenity"
+
     def __str__(self):
         return self.name

@@ -4,9 +4,6 @@ from django.contrib.auth.hashers import check_password
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
-# --- Authentication Views ---
-from rest_framework.response import Response
-
 from .controller.permission import (
     create_permission,
     delete_permission,
@@ -32,14 +29,12 @@ from .controller.user import (
 )
 
 # Import the custom decorator
-from .decorators import session_login_required
 from .models import Role, User, UserRole
 from .serializers import UserRoleSerializer
 
+
+# --- Authentication Views ---
 # Create your views here.
-
-
-
 def create_superuser_api(request):
     try:
         data = json.load(request.body)
@@ -153,8 +148,6 @@ def logout_view(request):
 def me_view(request):
     if request.method == "GET":
         user_id = request.session.get("user_id")
-        print("request.session", request.session)
-        print("user_id", user_id)
         if user_id:
             # User is logged in, retrieve info from session
             user_info = {
