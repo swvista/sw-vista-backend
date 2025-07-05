@@ -49,8 +49,8 @@ DATABASES = {
         "NAME": os.getenv("POSTGRES_DB", "swvista"),
         "USER": os.getenv("POSTGRES_USER", "swvista_user"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD", "swvista_pass"),
-        "HOST": "swvista-db",
-        "PORT": "5432",
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", "5433"),
     }
 }
 

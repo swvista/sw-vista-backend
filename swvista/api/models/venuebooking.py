@@ -100,3 +100,6 @@ class VenueBooking(models.Model):
 
     def __str__(self):
         return f"{self.venue.name} - {self.proposal.name if self.proposal else 'No Proposal'}"
+
+    class Meta:
+        db_table = "venue_booking"

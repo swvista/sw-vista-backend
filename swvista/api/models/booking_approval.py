@@ -16,3 +16,4 @@ class BookingApproval(models.Model):
     class Meta:
         unique_together = ["booking", "stage"]
         ordering = ["stage"]
+        db_table = "booking_approval"

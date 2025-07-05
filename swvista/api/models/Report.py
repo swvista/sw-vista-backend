@@ -18,6 +18,9 @@ class Report(models.Model):
     submitted_by = models.ForeignKey(User, on_delete=models.CASCADE)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        db_table = "report"
+
 
 class ReportAttachment(models.Model):
     report = models.ForeignKey(
@@ -27,3 +30,6 @@ class ReportAttachment(models.Model):
         upload_to="reports/%Y/%m/%d/",
         validators=[FileExtensionValidator(["pdf", "docx", "jpg", "png"])],
     )
+
+    class Meta:
+        db_table = "report_attachment"
