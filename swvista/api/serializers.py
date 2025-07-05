@@ -144,3 +144,7 @@ class ReportSerializer(serializers.ModelSerializer):
         model = Report
         fields = "__all__"
         read_only_fields = ["submitted_by", "submitted_at"]
+
+
+class FileUploadSerializer(serializers.Serializer):
+    file = serializers.FileField()

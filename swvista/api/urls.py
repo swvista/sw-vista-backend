@@ -108,4 +108,5 @@ urlpatterns = [
         name="get_amenities_of_a_venue_by_id",
     ),
     path("reports/", views.create_report, name="create_report"),
+    path("upload/", views.FileUploadView.as_view(), name="file_upload"),
 ]
