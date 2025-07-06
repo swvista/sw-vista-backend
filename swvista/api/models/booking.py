@@ -6,7 +6,7 @@ from .proposal import Proposal
 from .venue import Venue
 
 
-class VenueBooking(models.Model):
+class Booking(models.Model):
     # Your existing fields...
     EVENT_TYPE = [
         (0, "practice"),
@@ -35,8 +35,6 @@ class VenueBooking(models.Model):
         default=0,
     )  # Tracks current approval stage (0-3)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_PENDING)
-    booking_date = models.DateTimeField()
-    booking_duration = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -102,4 +100,4 @@ class VenueBooking(models.Model):
         return f"{self.venue.name} - {self.proposal.name if self.proposal else 'No Proposal'}"
 
     class Meta:
-        db_table = "venue_booking"
+        db_table = "booking"

@@ -6,8 +6,8 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rbac.decorators import check_user_permission, session_login_required
 
+from ..models.booking import Booking
 from ..models.booking_approval import BookingApproval
-from ..models.venuebooking import VenueBooking
 from ..serializers import BookingApprovalSerializer, VenueBookingSerializer
 
 # Map stages to required roles
@@ -43,10 +43,10 @@ def approve_booking(request, booking_id):
     if request.method == "POST":
         try:
             with transaction.atomic():
-                booking = get_object_or_404(VenueBooking, id=booking_id)
+                booking = get_object_or_404(Booking, id=booking_id)
 
                 # Check if booking is already approved or rejected
-                if booking.status != VenueBooking.STATUS_PENDING:
+                if booking.status != Booking.STATUS_PENDING:
                     return JsonResponse(
                         {
                             "error": f"Booking is already {booking.get_status_display().lower()}."
@@ -75,7 +75,7 @@ def approve_booking(request, booking_id):
 
                 # If this is the final approval stage (stage 3)
                 if booking.approval_stage == 3:
-                    booking.status = VenueBooking.STATUS_APPROVED
+                    booking.status = Booking.STATUS_APPROVED
                     booking.save()
                     return JsonResponse(
                         {
@@ -112,10 +112,10 @@ def reject_booking(request, booking_id):
     if request.method == "POST":
         try:
             with transaction.atomic():
-                booking = get_object_or_404(VenueBooking, id=booking_id)
+                booking = get_object_or_404(Booking, id=booking_id)
 
                 # Check if booking is already approved or rejected
-                if booking.status != VenueBooking.STATUS_PENDING:
+                if booking.status != Booking.STATUS_PENDING:
                     return JsonResponse(
                         {
                             "error": f"Booking is already {booking.get_status_display().lower()}."
@@ -146,7 +146,7 @@ def reject_booking(request, booking_id):
                 )
 
                 # Update booking status
-                booking.status = VenueBooking.STATUS_REJECTED
+                booking.status = Booking.STATUS_REJECTED
                 booking.save()
 
                 return JsonResponse(
@@ -174,9 +174,7 @@ def get_pending_approvals(request):
     if request.method == "GET":
         try:
 
-            pending_bookings = VenueBooking.objects.filter(
-                status=VenueBooking.STATUS_PENDING
-            )
+            pending_bookings = Booking.objects.filter(status=Booking.STATUS_PENDING)
 
             serializer = VenueBookingSerializer(pending_bookings, many=True)
             return JsonResponse(serializer.data, safe=False)
@@ -192,7 +190,7 @@ def get_pending_approvals(request):
 def get_approval_history(request, booking_id):
     """Get the full approval history for a booking"""
     if request.method == "GET":
-        booking = get_object_or_404(VenueBooking, id=booking_id)
+        booking = get_object_or_404(Booking, id=booking_id)
         approvals = booking.approvals.all()
         serializer = BookingApprovalSerializer(approvals, many=True)
         return JsonResponse(serializer.data, safe=False)

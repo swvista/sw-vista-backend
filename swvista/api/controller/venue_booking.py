@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rbac.decorators import check_user_permission, session_login_required
 
-from ..models.venuebooking import VenueBooking
+from ..models.booking import Booking
 from ..serializers import VenueBookingSerializer
 
 
@@ -17,7 +17,7 @@ def get_all_bookings(request):
     if request.method == "GET":
         # Optimized query with related data fetching
         bookings = (
-            VenueBooking.objects.select_related("venue", "proposal", "requester")
+            Booking.objects.select_related("venue", "proposal", "requester")
             .prefetch_related("approvals")
             .all()
         )
@@ -33,7 +33,7 @@ def get_all_bookings(request):
 def get_booking_by_id(request, booking_id):
     """Retrieve a specific booking by ID"""
     if request.method == "GET":
-        booking = get_object_or_404(VenueBooking, id=booking_id)
+        booking = get_object_or_404(Booking, id=booking_id)
         serializer = VenueBookingSerializer(booking)
         return JsonResponse(serializer.data, safe=False)
     return JsonResponse({"error": "Only GET method is allowed."}, status=405)
@@ -69,10 +69,10 @@ def update_booking(request, booking_id):
     """Update an existing venue booking"""
     if request.method == "PUT":
         try:
-            booking = get_object_or_404(VenueBooking, id=booking_id)
+            booking = get_object_or_404(Booking, id=booking_id)
 
             # Only allow updates if booking is still pending
-            if booking.status != VenueBooking.STATUS_PENDING:
+            if booking.status != Booking.STATUS_PENDING:
                 return JsonResponse(
                     {
                         "error": "Cannot update a booking that is already approved or rejected."
@@ -94,7 +94,7 @@ def update_booking(request, booking_id):
                 return JsonResponse(serializer.errors, status=400)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON format."}, status=400)
-        except VenueBooking.DoesNotExist:  # Specific exception
+        except Booking.DoesNotExist:  # Specific exception
             return JsonResponse({"error": "Booking not found."}, status=404)
         except Exception as e:
             # Log the exception
@@ -110,10 +110,10 @@ def delete_booking(request, booking_id):
     """Delete a venue booking"""
     if request.method == "DELETE":
         try:
-            booking = get_object_or_404(VenueBooking, id=booking_id)
+            booking = get_object_or_404(Booking, id=booking_id)
 
             # Only allow deletion if booking is still pending
-            if booking.status != VenueBooking.STATUS_PENDING:
+            if booking.status != Booking.STATUS_PENDING:
                 return JsonResponse(
                     {
                         "error": "Cannot delete a booking that is already approved or rejected."

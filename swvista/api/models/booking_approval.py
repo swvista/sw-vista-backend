@@ -5,7 +5,7 @@ class BookingApproval(models.Model):
     APPROVAL_STATUS = [(0, "Pending"), (1, "Approved"), (2, "Rejected")]
 
     booking = models.ForeignKey(
-        "api.venuebooking", on_delete=models.CASCADE, related_name="approvals"
+        "api.booking", on_delete=models.CASCADE, related_name="approvals"
     )
     approver = models.ForeignKey("rbac.User", on_delete=models.CASCADE)
     stage = models.IntegerField()
