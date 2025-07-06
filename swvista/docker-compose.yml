@@ -1,5 +1,10 @@
 version: '3.9'
 
+volumes:
+  postgres_data:
+  pgadmin_data:
+  azure_blob_storage:
+
 services:
   swvista-web:
     build:
@@ -15,6 +20,7 @@ services:
       - .env
     depends_on:
       - swvista-db
+      - azurite
 
   swvista-db:
     image: postgres:15
@@ -41,6 +47,12 @@ services:
     volumes:
       - pgadmin_data:/var/lib/postgresql/data
 
-volumes:
-  postgres_data:
-  pgadmin_data:
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: swvista-azurite
+    ports:
+      - "10000:10000"
+    environment:
+      - AZURITE_ACCOUNTS__DEFAULT__BLOB_PUBLIC_ACCESS=container
+    volumes:
+      - azure_blob_storage:/data

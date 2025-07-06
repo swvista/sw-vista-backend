@@ -1,3 +1,11 @@
+import os
+import uuid
+from datetime import datetime
+
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .controller.amenity import (
     create_amenity,
     delete_amenity,
@@ -46,6 +54,33 @@ from .controller.venue_booking import (
     get_booking_by_id,
     update_booking,
 )
+from .serializers import FileUploadSerializer
+from .services.azure_blob_storage import AzureBlobStorage
+
+
+class FileUploadView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = FileUploadSerializer(data=request.data)
+        if serializer.is_valid():
+            file = serializer.validated_data["file"]
+            blob_storage = AzureBlobStorage()
+
+            original_name = file.name
+            name, ext = os.path.splitext(original_name)
+
+            # Clean and format filename
+            safe_name = "".join(
+                c for c in name if c.isalnum() or c in ("_", "-")
+            ).rstrip()
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            unique_name = f"{safe_name}_{timestamp}_{uuid.uuid4().hex[:8]}{ext}"
+
+            # Upload
+            file_url = blob_storage.upload_file(unique_name, file.read())
+
+            return Response({"file_url": file_url}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Venue API

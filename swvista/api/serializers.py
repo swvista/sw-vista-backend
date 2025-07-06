@@ -3,6 +3,7 @@ from rbac.models import User  # Import User model from rbac
 from rest_framework import serializers
 
 from .models.amenity import Amenity
+from .models.booking import Booking
 
 # Import models from their specific files
 from .models.booking_approval import BookingApproval
@@ -12,7 +13,6 @@ from .models.proposal import Proposal
 from .models.Report import Report
 from .models.venue import Venue
 from .models.VenueAmenities import VenueAmenities
-from .models.venuebooking import VenueBooking
 
 
 # Define UserSerializer for nested representation
@@ -78,7 +78,7 @@ class VenueBookingSerializer(serializers.ModelSerializer):
     requester_details = UserSerializer(source="requester", read_only=True)
 
     class Meta:
-        model = VenueBooking
+        model = Booking
         fields = [
             "id",
             "venue",
@@ -144,3 +144,7 @@ class ReportSerializer(serializers.ModelSerializer):
         model = Report
         fields = "__all__"
         read_only_fields = ["submitted_by", "submitted_at"]
+
+
+class FileUploadSerializer(serializers.Serializer):
+    file = serializers.FileField()
